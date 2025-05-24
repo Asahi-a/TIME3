@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="result">
+            <div id="hTs">
+            </div>
+        </div>
+        <div class="form">
+            <div class="calc">
+                <table style="border:0;">
+                    <tr><td class ="trbd">駅間距離[m]</td><td>
+                    <input type="number" id="Xe" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">制限速度[km/h]</td><td>
+                    <input type="number" id="Vh" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">加速度[km/h/s]</td><td>
+                    <input type="number" id="Ak" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">減速度[km/h/s]</td><td>
+                    <input type="number" id="Ag" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">初速度[km/h]</td><td>
+                    <input type="number" id="Vs" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">終速度[km/h]</td><td>
+                    <input type="number" id="Vf" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">勾配[‰]</td><td>
+                    <input type="number" id="S" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)登りは正で下りは負。考慮しないときや平坦時は0</td></tr>
+                    <tr><td class ="trbd">空走時間[秒]</td><td>
+                    <input type="number" id="Fr" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)電車:2-4秒、客車列車:5両で6秒､10両で8秒､15両で11.3秒(いずれも機関車含む)、気動車:電磁式ブレーキがある時4秒､ない時客車列車と同じ</td></tr>
+                    <tr><td class ="trbd">係数</td><td>
+                    <input type="number" id="K" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)動力集中方式:30、動力分散方式:31</td></tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+    <h3 class="h3">参考資料</h3>
+    <p class="h3">梅原淳(2020)『電車はブレーキをかけてから何mで停止できる？新幹線は？列車脱線事故の京浜急行電鉄は？』https://www.excite.co.jp/news/article/Bizjournal_202001_post_134461/(2021年8月17日)
+    </p>
+
+    <h3 class="h3">バージョン履歴</h3>
+    <p class="h3">Ver1.0 2021.8/17</p>
+    <p class="h3">Ver1.1 2021.10/23 結果表示画面の微調整</p>
+    <p class="h3">Ver1.2 2022.5/5 一部計算が終了しない問題を修正</p>
+    <p class="h3">Ver2.0 2025.5/25 数値入力場所をポップアップウィンドウから画面上フォームに改良、リアルタイム計算の実装、UIの大幅な変更</p>
+
+    <script type="text/javascript" src="TIME.js"></script>
+
+    <style>
+        body {
+            color: #fff;
+            background-color: rgb(0, 0, 0);
+            padding: 10px;
+        }
+
+        h1:hover {
+            color: #0ff;
+        }
+
+        .h3:hover {
+            color: #0ff;
+        }
+
+        p:hover {
+            color: #0ff;
+        }
+
+        input{
+            width: 100px;
+            font-size: 110%;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-align: end;
+            background-color: #383838;
+            color:rgb(255, 103, 103);
+        }
+
+        .container {
+            width: 95%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            border-width: 10px;
+            border-color: #383838;
+            border-style: solid;
+        }
+
+        .result {
+            border: 1px solid #aaa;
+            width: 45%;
+            margin: 10px;
+            padding: 10px;
+            padding-top: 50px;
+            font-weight: bold;
+        }
+
+        .form {
+            border: 1px solid #aaa;
+            width: 45%;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .small {
+            font-size: 50%;
+            color: #aaa;
+        }
+
+        .trbd {
+            width: 250px;
+            font-weight: bold;
+        }
+        .trbd:hover {
+            font-size: 105%;
+            color:rgb(255, 103, 103);
+        }
+    </style>
+
+
+</body>
+
+</html>
