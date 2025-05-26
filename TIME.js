@@ -14,6 +14,8 @@ function calc() {
   var Fr;//空走時間
   var Err = 0;//エラーの種類
 
+  var Ts2;//Ts2はver3.1バグ回避用
+
   Ak = document.getElementById("Ak").value;
   Ag = document.getElementById("Ag").value;
   Vs = document.getElementById("Vs").value;
@@ -109,15 +111,19 @@ function calc() {
           RAg = ((Vh * Vh) - (Vf * Vf)) / (2 * (Xg - (Fr * Vh)));
         }
 
-        Ts = ((Vh - Vs) / RAk) + ((Vh - Vf) / RAg) + ((Xe - Xk - Xg) / Vh) + Fr;　//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
-
+        Ts = ((Vh - Vs) / RAk) + ((Vh - Vf) / RAg) + ((Xe - Xk - Xg) / Vh) + Fr;
+        Ts2 = ((Vh - Vs) / RAk + 0.0001) + ((Vh - Vf) / RAg + 0.0001) + ((Xe - Xk - Xg) / Vh + 0.0001) + Fr;　//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
+        
         //m/s→km/h、四捨五入
         Vh = Vh * 3.6;
-        //Ts = Math.round(Ts);
+        Ts = Math.round(Ts);
+        Ts2 = Math.round(Ts2);
         Vh = Math.round(Vh);
 
-
-      }
+        //ver3.1バグ回避用 (たとえば、本来76秒の所が764となったり10倍して4たした数になっていた。)
+        if (Ts*10 > Ts2){
+          Ts = Ts2;
+        }
     }
 
 
