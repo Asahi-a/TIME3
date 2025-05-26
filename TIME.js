@@ -109,11 +109,11 @@ function calc() {
           RAg = ((Vh * Vh) - (Vf * Vf)) / (2 * (Xg - (Fr * Vh)));
         }
 
-        Ts = ((Vh - Vs) / RAk + 0.0001) + ((Vh - Vf) / RAg + 0.0001) + ((Xe - Xk - Xg) / Vh + 0.0001) + Fr;　//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
+        Ts = ((Vh - Vs) / RAk) + ((Vh - Vf) / RAg) + ((Xe - Xk - Xg) / Vh) + Fr;　//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
 
         //m/s→km/h、四捨五入
         Vh = Vh * 3.6;
-        Ts = Math.round(Ts);
+        //Ts = Math.round(Ts);
         Vh = Math.round(Vh);
 
 
