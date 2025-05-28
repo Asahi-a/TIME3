@@ -43,6 +43,19 @@
                 </table>
             </div>
         </div>
+        <div class = "curve">
+            <div>
+                <table style="border:0;">
+                    <tr><td style = "font-size: 150%;font-weight: bold;">曲線制限速度</td></tr>
+                    <tr><td style = "text-align: end;"><span id="rec" style = "font-size: 130%;color:rgb(255, 103, 103);font-family: Impact;font-weight: bold;"></span><span style = "font-size: 110%;font-weight: bold;">km/h</span><span>(5㌔刻み)</span></td></tr>
+                    <tr><td class ="trbd">曲線半径[m]</td></tr>
+                    <tr><td style="text-align: end;"><input type="number" id="Rc" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">係数</td></tr>
+                    <tr><td style="text-align: end;"><input type="number" id="Kc" placeholder="半角数字"></td></tr>
+                    <tr><td class="small">参考)在来線では3.5、新幹線では4.8。</td></tr>
+                </table>
+            </div>
+        </div>
 
     </div>
     <p style = "font-weight:bold;color:rgb(255, 103, 103);">当機は指定された制限速度が大きい場合加速可能な速度まで最高速度を自動的に切り下げる機能を搭載していますが、極端に大きな値を指定した場合、計算処理が終了せず値が更新されないことやページが固まる場合がございます。ご注意ください。</p>
@@ -113,9 +126,26 @@
 
         .form {
             border: 1px solid #aaa;
+            width: 35%;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .result {
+            border: 1px solid #aaa;
             width: 45%;
             margin: 10px;
             padding: 10px;
+            padding-top: 50px;
+            font-weight: bold;
+        }
+
+        .curve {
+            border: 1px solid #aaa;
+            width: 15%;
+            margin: 10px;
+            padding: 10px;
+            background-color: #282828;
         }
 
         .small {
