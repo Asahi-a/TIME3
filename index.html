@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>架空鉄道向け駅間所要時間計算機v3</title>
+    <title>架空鉄道向け駅間所要時間計算機V4</title>
 </head>
 
 <body>
@@ -46,6 +46,7 @@
         <div class = "curve">
             <div>
                 <table style="border:0;">
+                    <tr><td style = "font-size: 50%;font-weight: bold;">補助ツール</td></tr>
                     <tr><td style = "font-size: 150%;font-weight: bold;">曲線制限速度</td></tr>
                     <tr><td style = "text-align: end;"><span id="rec" style = "font-size: 130%;color:rgb(255, 103, 103);font-family: Impact;font-weight: bold;"></span><span style = "font-size: 110%;font-weight: bold;">km/h</span><span>(5㌔刻み)</span></td></tr>
                     <tr><td class ="trbd">曲線半径[m]</td></tr>
@@ -68,6 +69,7 @@
     <p class="h3">Ver2.2 2022.5/23 空走距離に関する修正</p>
     <p class="h3">Ver3.0 2025.5/25 数値入力場所をポップアップウィンドウから画面上フォームに改良、リアルタイム計算の実装、UIの大幅な変更</p>
     <p class="h3">Ver3.1 2025.5/27 特定の値で所要時間が10倍以上になる問題に対して暫定的な処置を実行</p>
+    <p class="h3">Ver4.0 2025.5/28 曲線制限速度計算をする補助ツールを実装</p>
     
     <p class="h3">
         計算式は『鉄道電気技術者のための信号概論　閉そく装置』(日本鉄道電気技術協会、2008年4月)が引用されている『電車はブレーキをかけてから何mで停止できる？新幹線は？列車脱線事故の京浜急行電鉄は？』https://www.excite.co.jp/news/article/Bizjournal_202001_post_134461/ (梅原淳、2020年1月)から組み立てた。
