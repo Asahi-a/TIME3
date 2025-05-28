@@ -170,7 +170,39 @@ function calc() {
 }
 
 
-let text_form = document.getElementById('calc');
+//ver4.0 曲線制限速度計算ツール用
+function curvecalc() {
+  var Rc;//曲線半径
+  var Kc;//係数
+  var Vc;//曲線制限速度
+  var Errc = 0;//エラーの種類
+
+  Rc = document.getElementById("Rc").value;
+  Kc = document.getElementById("Kc").value;
+
+
+  if (Rc == "" || Kc == "") {
+    Errc = 1;
+  }
+
+  Vc = Kc * Math.sqrt(Rc);
+  
+  //5km/h単位に切り捨て
+  Vc = Math.floor(Vc / 5) * 5
+  
+  if (Errc == 0) {
+    var rec = document.getElementById('rec');
+    rec.innerHTML = Vc;
+  }
+
+  if (Errc == 1) {
+    var rec = document.getElementById('rec');
+    rec.innerHTML = '--';
+  }
+
+}
+
+let text_form = document.getElementById('container');
 
 timestamp = 0;
 
@@ -181,8 +213,11 @@ function update() {
 
   if (timestamp % 10 == 0) {
     calc();
+    curvecalc();
   }
 
 }
+
+
 
 update();
