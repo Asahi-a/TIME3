@@ -127,7 +127,7 @@ function calc() {
 
         //m/s→km/h、四捨五入
         Vh = Vh * 3.6;
-        Vh600 = Vh600 * 3.6;
+        //Vh600 = Vh600 * 3.6;
         Ts = Math.round(Ts);
         Ts2 = Math.round(Ts2);
         Vh = Math.round(Vh);
