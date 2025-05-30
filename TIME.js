@@ -39,6 +39,7 @@ function calc() {
 
 
 
+    //Err1の必要性に関しては要審議(Err2に包含される可能性)
     if (Vs > Vf && Xe < ((1.8 * ((Vs * Vs) - (Vf * Vf))) / (3.6 * Ag + (S) / K)) + Vh * Fr) {
       Err = 1;
     }
@@ -112,18 +113,32 @@ function calc() {
         }
 
         Ts = ((Vh - Vs) / RAk) + ((Vh - Vf) / RAg) + ((Xe - Xk - Xg) / Vh) + Fr;
-        Ts2 = ((Vh - Vs) / RAk + 0.0001) + ((Vh - Vf) / RAg + 0.0001) + ((Xe - Xk - Xg) / Vh + 0.0001) + Fr;　//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
+        Ts2 = ((Vh - Vs) / RAk + 0.0001) + ((Vh - Vf) / RAg + 0.0001) + ((Xe - Xk - Xg) / Vh + 0.0001) + Fr;//0.0001にかんしては各項の末尾がなぜか.999999...になった時に四捨五入のバグが生じる為追加
+
+        
+        //実装予定 600メートル条項検知用
+        //var Xg600;//Vhから完全停車するための距離
+        //Xg600 = ((1.8 * ((Vh * Vh))) / (3.6 * Ag + (S / K))) + (Vh * Fr);
+        //if (Xg600 > 600){
+        //  Err = 7;
+        //  var Vh600;//600mで止まれる最高速度
+        //  Vh600 = ( Math.sqrt(( Fr * Fr ) - 4 * ( 1.8 / ( 3.6 * Ag + (S / K) ) ) * ( -600 ) ) - Fr ) / (2 * 1.8 / ( 3.6 * Ag + (S / K) ));
+        //}
 
         //m/s→km/h、四捨五入
         Vh = Vh * 3.6;
+        Vh600 = Vh600 * 3.6;
         Ts = Math.round(Ts);
         Ts2 = Math.round(Ts2);
         Vh = Math.round(Vh);
+        //Vh600 = Math.round(Vh600); //ver4.1
+        //Xg600 = Math.round(Xg600); //ver4.1
 
         //ver3.1バグ回避用 (たとえば、本来76秒の所が764となったり10倍して4たした数になっていた。)
         if (Ts*10 > Ts2){
           Ts = Ts2;
         }
+
 
       }
     }
@@ -135,9 +150,15 @@ function calc() {
       hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Ts + '</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Vh + '</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div>';
     }
 
+    //実装予定 600メートル条項用
+    //if (Err == 7) {
+    //  var hTs = document.getElementById('hTs');
+    //  hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Ts + '</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Vh + '</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 255, 0);">!attention!</h2><h4>最高速度から停車するまでに' + Xg600 + 'mが必要です。</h4><h4>600メートル条項を適用する場合で車両性能や勾配を変えないとき、最高速度を' + Vh600 + 'km/h以下に設定してください。</h4>';
+    //}
+
     if (Err == 1) {
       var hTs = document.getElementById('hTs');
-      hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table><h2 style="color:rgb(255, 103, 103);">!error!</h2></div><h3>所定キョリ内で終速度まで減速できません！</h3><h4>初速度をもう少し低く設定するか、次の区間と統合するなどしてください。また、計算の長時間化を避ける為最高速度が極度に大きい場合もこのエラーが出る可能性があります。</h4>';
+      hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>所定キョリ内で終速度まで減速できません！</h3><h4>初速度をもう少し低く設定するか、次の区間と統合するなどしてください。また、計算の長時間化を避ける為最高速度が極度に大きい場合もこのエラーが出る可能性があります。</h4>';
     }
 
     if (Err == 2) {
@@ -157,7 +178,7 @@ function calc() {
 
     if (Err == 5) {
       var hTs = document.getElementById('hTs');
-      hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>勾配がきつすぎて止まれません！</h3><h3>減速度を大きくしてください。</h3>';
+      hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>勾配がきつすぎて止まれません！</h3><h4>減速度を大きくしてください。</h4>';
     }
 
   }
@@ -168,7 +189,6 @@ function calc() {
   }
 
 }
-
 
 //ver4.0 曲線制限速度計算ツール用
 function curvecalc() {
