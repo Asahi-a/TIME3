@@ -120,7 +120,7 @@ function calc() {
                 Vh = Vh - 0.01;
 
                 //切り下げ過ぎの時
-                if (Vh < Vs && Vh < Vf) {
+                if (Vh < Vs || Vh < Vf) {
                     if (Vs >= Vf) {
                         Vh = Vs;
                     } else {
