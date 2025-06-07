@@ -197,7 +197,7 @@ function calc() {
             //ver6.0グラフ描画システム
             //グラフ描画のためのSVG要素を生成
             var grapharea = document.getElementById('grapharea');
-            grapharea.innerHTML = '<svg id = "graph" width = "480" height="270"></svg>';
+            grapharea.innerHTML = '<p class ="trbd">運　転　曲　線</p><svg id = "graph" width = "480" height="270"></svg>';
             //グラフのIDをとっておく
             var graph = document.getElementById('graph');
             //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=237である)
