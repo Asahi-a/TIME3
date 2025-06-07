@@ -193,36 +193,107 @@ function calc() {
         if (Err == 0) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Ts + '</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">' + Vh + '</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div>';
+
+            //ver6.0グラフ描画システム
+            //グラフ描画のためのSVG要素を生成
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '<svg id = "graph" width = "480" height="270"></svg>';
+            //グラフのIDをとっておく
+            var graph = document.getElementById('graph');
+            //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=237である)
+            Vd = Vd * 3.6;
+            var vline = 10;
+            while (vline <= Vd) {
+                var vlinenoyzahyo = 237 - (vline * 230 / Vd);
+                if (vline % 50 == 0) {
+                    graph.innerHTML += '<line x1="0" y1="' + vlinenoyzahyo + '" x2="480" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="25" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="0" y1="' + vlinenoyzahyo + '" x2="480" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                }
+                vline += 10;
+            }
+            //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上ではXeがx=470,原点がx=50である)
+            var xline = 100;
+            while (xline <= Xe) {
+                var xlinenoyzahyo = 50 + (xline * 420 / Xe);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+                if (xline % 500 == 0) {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="270" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="252" text-anchor = "middle">' + xline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="270" stroke="#888888" stroke-width="1px"/>';
+                }
+                xline += 100;
+            }
+            //グラフの軸とラベルの描画
+            graph.innerHTML += '<line x1="50" y1="0" x2="50" y2="270" stroke="white" stroke-width="2px"/><line X1="0" y1="237" x2 = "480" y2="237" stroke="white" stroke-width="2px"/><text x="35" y="252">0</text><text x="267" y="267">距離</text><text class = "small" x="460" y="267">[m]</text><line x1="50" y1="0" x2="42" y2="8" stroke="white" stroke-width="2px"/><line x1="50" y1="0" x2="58" y2="8" stroke="white" stroke-width="2px"/><text x="0" y="125">速</text><text x="0" y="142">度</text><text class="small" x="0" y="10">[km/h]</text><line x1="480" y1="237" x2="472" y2="229" stroke="white" stroke-width="2px"/><line x1="480" y1="237" x2="472" y2="245" stroke="white" stroke-width="2px"/>';
+            //加速区間の描画(1秒毎に区切ってtの媒介変数表示で直線を引く,T0sからT0hまでで計算し、x方向にx(T0s)だけ引く)
+            var Tgraphkasoku = T0s;
+            while (Tgraphkasoku <= T0h) {
+                var Xgparhsitenkasoku = 50 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 420 / Xe);
+                var Vgparhsitenkasoku = 237 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 230 / Vd);
+                Tgraphkasoku += 1;
+                var Xgparhsyutenkasoku = 50 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 420 / Xe);
+                var Vgparhsyutenkasoku = 237 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 230 / Vd);
+                graph.innerHTML += '<line x1="' + Xgparhsitenkasoku + '" y1="' + Vgparhsitenkasoku + '" x2="' + Xgparhsyutenkasoku + '" y2="' + Vgparhsyutenkasoku + '" stroke="rgb(255, 103, 103)" stroke-width="4px"/>';
+            }
+            //惰行区間の描画
+            graph.innerHTML += '<line x1="' + (50 + (Xk * 420 / Xe)) + '" y1="' + (237 - (Vh * 230 / Vd)) + '" x2="' + (50 + ((Xe - Xg) * 420 / Xe)) + '" y2="' + (237 - (Vh * 230 / Vd)) + '" stroke="rgb(255, 245, 153)" stroke-width="4px"/>';
+            //空走区間の描画
+            Xfr = Fr * Vh / 3.6;
+            graph.innerHTML += '<line x1="' + (50 + ((Xe - Xg) * 420 / Xe)) + '" y1="' + (237 - (Vh * 230 / Vd)) + '" x2="' + (50 + ((Xe - Xg + Xfr) * 420 / Xe)) + '" y2="' + (237 - (Vh * 230 / Vd)) + '" stroke="rgb(153, 255, 153)" stroke-width="4px"/>';
+            //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
+            var Vgraphgensoku = Vh/ 3.6;
+            while (Vgraphgensoku >= Vf) {
+                var Xgraphsitengensoku = 50 + ((Vgraphgensoku ** 2 - (Vh/3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe+Xfr-Xg)) * 420 / Xe;
+                var Vgraphsitengensoku = 237 - (Vgraphgensoku * 3.6 * 230 / Vd);
+                Vgraphgensoku -= 1;
+                var Xgraphsyutengensoku = 50 + ((Vgraphgensoku ** 2 - (Vh/3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe+Xfr-Xg)) * 420 / Xe; 
+                var Vgraphsyutengensoku = 237 - (Vgraphgensoku * 3.6 * 230 / Vd);
+                graph.innerHTML += '<line x1="' + Xgraphsitengensoku + '" y1="' + Vgraphsitengensoku + '" x2="' + Xgraphsyutengensoku + '" y2="' + Vgraphsyutengensoku + '" stroke="#00ffff" stroke-width="4px"/>';
+            }
         }
 
         if (Err == 1) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>初速度または終速度もしくは制限速度を設計最高速度よりも大きく設定しないでください！</h3>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
         if (Err == 2) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>所定キョリ内で終速度まで減速又は加速できません！</h3><h4>値を設定し直してください。もしくは次の区間と統合するなどしてください。</h4>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
         if (Err == 3) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>初速度または終速度を制限速度よりも大きく設定しないでください！</h3>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
         if (Err == 4) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>勾配がきつすぎて登れません！</h3><h4>加速度を大きくしてください。</h4>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
         if (Err == 5) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>勾配がきつすぎて止まれません！</h3><h4>減速度を大きくしてください。</h4>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
         if (Err == 7) {
             var hTs = document.getElementById('hTs');
             hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>勾配がきつすぎて終速度まで到達できません！</h3><h4>終速度を小さくしてください。</h4>';
+            var grapharea = document.getElementById('grapharea');
+            grapharea.innerHTML = '';
         }
 
     }
@@ -230,6 +301,8 @@ function calc() {
     if (Err == 6) {
         var hTs = document.getElementById('hTs');
         hTs.innerHTML = '<div style = "display: flex; height :50%;align-items: flex-end;"></br><table><tr><td width = 150px><div style ="font-size:30px;border: 0;">所要時間</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">秒</div></td></tr><tr><td width = 150px><div style ="font-size:30px;border: 0;">最高速度</div></td><td width = 150px style="text-align: end;font-family: Impact;color:rgb(255, 103, 103);"><div style ="font-size:30px;border: 0;">--</div></td><td><div style ="font-size:25px;border: 0;">km/h</div></td></tr></table></div><h2 style="color:rgb(255, 103, 103);">!error!</h2><h3>「車両諸元」と「区間データ」には全ての数値を入力してください！</h3>';
+        var grapharea = document.getElementById('grapharea');
+        grapharea.innerHTML = '';
     }
 
 }
@@ -267,8 +340,6 @@ function curvecalc() {
     }
 
 }
-
-
 
 //自動更新システム
 timestamp = 0;
