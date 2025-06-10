@@ -105,9 +105,15 @@ function calc() {
 
             //最高速度自動切り下げシステムに必要なパラメータを計算
             //加速距離
+            if (Vs == Vh) {
+                Xk = 0;//勾配が強い場合普通に計算すると値が出ず最終的に惰行距離の算出に影響が出る
+                T0s = 0;
+                T0h = 0;//T0s及びT0hはグラフ描画に必要のため
+            } else {
             T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
             T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
             Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+            }
             //減速距離
             if (Vf == Vh) {
                 Xg = 0;
@@ -128,9 +134,15 @@ function calc() {
                     }
 
                     //加減速距離の再計算
-                    T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
-                    T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
-                    Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                    if (Vs == Vh) {
+                        Xk = 0;//勾配が強い場合普通に計算すると値が出ず最終的に惰行距離の算出に影響が出る
+                        T0s = 0;
+                        T0h = 0;
+                    } else {
+                        T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
+                        T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
+                        Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                    }
                     if (Vf == Vh) {
                         Xg = 0;
                     } else {
@@ -144,9 +156,15 @@ function calc() {
                 } else {
                     //切り下げ過ぎでないとき    
                     //加減速距離の再計算
-                    T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
-                    T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
-                    Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                    if (Vs == Vh) {
+                        Xk = 0;//勾配が強い場合普通に計算すると値が出ず最終的に惰行距離の算出に影響が出る
+                        T0s = 0;
+                        T0h = 0;
+                    } else {
+                        T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
+                        T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
+                        Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                    }
                     if (Vf == Vh) {
                         Xg = 0;
                     } else {
@@ -229,7 +247,7 @@ function calc() {
             graph.innerHTML += '<line x1="50" y1="0" x2="50" y2="270" stroke="white" stroke-width="2px"/><line X1="0" y1="237" x2 = "480" y2="237" stroke="white" stroke-width="2px"/><text x="35" y="252">0</text><text x="267" y="267">距離</text><text class = "small" x="460" y="267">[m]</text><line x1="50" y1="0" x2="42" y2="8" stroke="white" stroke-width="2px"/><line x1="50" y1="0" x2="58" y2="8" stroke="white" stroke-width="2px"/><text x="0" y="125">速</text><text x="0" y="142">度</text><text class="small" x="0" y="10">[km/h]</text><line x1="480" y1="237" x2="472" y2="229" stroke="white" stroke-width="2px"/><line x1="480" y1="237" x2="472" y2="245" stroke="white" stroke-width="2px"/>';
             //加速区間の描画(1秒毎に区切ってtの媒介変数表示で直線を引く,T0sからT0hまでで計算し、x方向にx(T0s)だけ引く)
             var Tgraphkasoku = T0s;
-            while (Tgraphkasoku <= T0h) {
+            while (Tgraphkasoku < T0h) {
                 var Xgparhsitenkasoku = 50 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 420 / Xe);
                 var Vgparhsitenkasoku = 237 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 230 / Vd);
                 Tgraphkasoku += 1;
@@ -244,7 +262,7 @@ function calc() {
             graph.innerHTML += '<line x1="' + (50 + ((Xe - Xg) * 420 / Xe)) + '" y1="' + (237 - (Vh * 230 / Vd)) + '" x2="' + (50 + ((Xe - Xg + Xfr) * 420 / Xe)) + '" y2="' + (237 - (Vh * 230 / Vd)) + '" stroke="rgb(153, 255, 153)" stroke-width="4px"/>';
             //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
             var Vgraphgensoku = Vh/ 3.6;
-            while (Vgraphgensoku >= Vf) {
+            while (Vgraphgensoku > Vf) {
                 var Xgraphsitengensoku = 50 + ((Vgraphgensoku ** 2 - (Vh/3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe+Xfr-Xg)) * 420 / Xe;
                 var Vgraphsitengensoku = 237 - (Vgraphgensoku * 3.6 * 230 / Vd);
                 Vgraphgensoku -= 1;
