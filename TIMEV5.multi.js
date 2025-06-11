@@ -81,7 +81,7 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
         } else if (Vl < Vs) {
             Vh = Vs;
         } else if (Vl < Vh) {
-            Vh = Vl;
+            Vh = Vl - 0.001;//ぴったりにしてしまうと加速度0の点を計算に含んでしまいバグるため
         }
 
         //計算開始
