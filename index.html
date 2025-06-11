@@ -10,7 +10,8 @@
 </head>
 
 <body>
-    <table style="border:0;width=95%">
+    <div class = "header">
+    <table>
         <tr>
             <td><span style="font-size: 120%;color: rgb(255, 103, 103);font-weight: bold;">架空鉄道向け所要時間計算機V5</span></td>
             <td width="650px"></td>
@@ -19,6 +20,7 @@
             <td style="font-size: 50%;color: #aaa;font-weight: bold;text-align: end;">最高速度自動切下<br>加減速度勾配補正</td>
         </tr>
     </table>
+    </div>
     <div class="container">
         <div class="result">
             <div id="hTs">
@@ -206,6 +208,13 @@
             text-align: end;
             background-color: #383838;
             color: rgb(255, 103, 103);
+        }
+
+        .container {
+            width: 95%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
         }
 
         .container {
