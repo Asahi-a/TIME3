@@ -40,6 +40,11 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
         K = parseFloat(K);
         Fr = parseFloat(Fr);
 
+        //下りの計算の時は勾配の値を反転
+        if (NorK == 0) {
+            S = -1 * S;
+        }
+
 
         //入力値の単位をm,sに換算
         Ak = Ak / 3.6;
