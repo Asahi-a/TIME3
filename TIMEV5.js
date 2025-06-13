@@ -218,6 +218,8 @@ function calc() {
             grapharea.innerHTML = '<p class ="trbd2">運　転　曲　線</p><svg id = "graph" width = "480" height="270"></svg>';
             //グラフのIDをとっておく
             var graph = document.getElementById('graph');
+
+            if (Vd <= 200){
             //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=237である)
             Vd = Vd * 3.6;
             var vline = 10;
@@ -231,6 +233,22 @@ function calc() {
                 }
                 vline += 10;
             }
+            }else{//201㌔以上で半分に間引く
+            Vd = Vd * 3.6;
+            var vline = 20;
+            while (vline <= Vd) {
+                var vlinenoyzahyo = 237 - (vline * 230 / Vd);
+                if (vline % 100 == 0) {
+                    graph.innerHTML += '<line x1="0" y1="' + vlinenoyzahyo + '" x2="480" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="25" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="0" y1="' + vlinenoyzahyo + '" x2="480" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                }
+                vline += 20;
+            }
+            }
+
+            if (Xe <= 5000){
             //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上ではXeがx=470,原点がx=50である)
             var xline = 100;
             while (xline <= Xe) {
@@ -243,6 +261,20 @@ function calc() {
                 }
                 xline += 100;
             }
+            }else{//5001m以上の時半分に間引く
+            var xline = 200;
+            while (xline <= Xe) {
+                var xlinenoyzahyo = 50 + (xline * 420 / Xe);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+                if (xline % 1000 == 0) {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="270" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="252" text-anchor = "middle">' + xline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="270" stroke="#888888" stroke-width="1px"/>';
+                }
+                xline += 200;
+            }
+            }
+            
             //グラフの軸とラベルの描画
             graph.innerHTML += '<line x1="50" y1="0" x2="50" y2="270" stroke="white" stroke-width="2px"/><line X1="0" y1="237" x2 = "480" y2="237" stroke="white" stroke-width="2px"/><text x="35" y="252">0</text><text x="267" y="267">距離</text><text class = "small" x="460" y="267">[m]</text><line x1="50" y1="0" x2="42" y2="8" stroke="white" stroke-width="2px"/><line x1="50" y1="0" x2="58" y2="8" stroke="white" stroke-width="2px"/><text x="0" y="125">速</text><text x="0" y="142">度</text><text class="small" x="0" y="10">[km/h]</text><line x1="480" y1="237" x2="472" y2="229" stroke="white" stroke-width="2px"/><line x1="480" y1="237" x2="472" y2="245" stroke="white" stroke-width="2px"/>';
             //加速区間の描画(1秒毎に区切ってtの媒介変数表示で直線を引く,T0sからT0hまでで計算し、x方向にx(T0s)だけ引く)
