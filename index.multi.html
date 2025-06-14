@@ -131,12 +131,16 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td class="trbd" colspan="2" style="color:#888;">空走時間[秒]<span class="small" style="text-align: end;">※調整中</span></td>
-                    <td>
-                        <div
-                            style="width:58px;background-color: #2a2a2a;font-size: 110%;color: rgb(223, 71, 71);font-family: Impact;text-align: start;">
-                            <div style="width:39px;text-align: end;">0</div>
+                    <td class="trbd" colspan="2">空走時間[秒]
+                        <button id="click-btn">参考値</button>
+                        <div id="popup-wrapper">
+                            <div id="popup-inside">
+                                参考)電車:2-4秒、客車列車:5両で6秒､10両で8秒､15両で11.3秒(いずれも機関車含む)、気動車:電磁式ブレーキがある時4秒､ない時客車列車と同じ
+                            </div>
                         </div>
+                    </td>
+                    <td>
+                        <input type="number" id="Fr" placeholder="半角数字">
                     </td>
                     <td class="trbd" colspan="2">制限速度[km/h]</td>
                     <td class="small" style="text-align: end;">制限なしの場合<br>営業最高速度</td>
@@ -163,7 +167,7 @@
                 </tr>
                 <tr>
                     <td class="trbd">係数</td>
-                    <td class="small">動力集中方式:30<br>動力分散方式:31</td>
+                    <td class="small" style ="text-align:end;">参考)動力集中方式:30<br>動力分散方式:31</td>
                     <td>
                         <input type="number" id="K" placeholder="半角数字">
                     </td>
@@ -371,6 +375,7 @@
     <p class="h3">Ver6.0 2025.6/7 運転曲線描画機能を実装</p>
     <p class="h3">Ver6.1 2025.6/10 勾配の急な区間で初速度から加速しない場合に値が算出されない問題の修正</p>
     <p class="h3">Ver7.0 2025.6/12 5区間双方向同時計算が可能な<span style="font-family: Impact;font-size: 80%;color: #ddd;"><i>multi</i></span>バージョンを実装</p>
+    <p class="h3">Ver7.1 2025.6/14 複数区間にまたがって連続的に減速する場合に減速開始時以外の空走を自動的に無視する機能の実装、グラフ補助線の自動本数調整の実装、その他UIの軽微な改良。</p>
 
     <p class="h3" style="word-break: break-all;">
         勾配による補正については『鉄道電気技術者のための信号概論　閉そく装置』(日本鉄道電気技術協会、2008年4月)が引用されている『電車はブレーキをかけてから何mで停止できる？新幹線は？列車脱線事故の京浜急行電鉄は？』https://www.excite.co.jp/news/article/Bizjournal_202001_post_134461/
@@ -486,6 +491,36 @@
 
         ::placeholder {
             font-size: 12px;
+        }
+
+        #popup-wrapper {
+            background-color: rgba(0, 0, 0, .5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #popup-inside {
+            text-align: center;
+            width: 100%;
+            max-width: 150px;
+            background: #383838;
+            position: relative;
+            top:400px;
+            left: 265px;
+            font-size: 10px;
+            color:#ddd;
+            font-weight: normal;
+        }
+
+        #close {
+              position: absolute;
+              top: 0;
+              right: 5px;
+              cursor: pointer;
         }
     </style>
 
