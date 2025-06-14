@@ -1,7 +1,7 @@
 //注意！！！！べき乗の記号は^ではなく**を用いること！！！！長らく解決しなかったバグの原因がこれでした！！！！！！！！！！！！！！！！...てか前バージョンのときもべき乗周りがバグってたからかVh*Vhみたいにしてて草()
 
 //計算関数
-function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
+function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef }) {
 
     //基本的なパラメータ
     var Tk;//加速時間
@@ -19,12 +19,14 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
     //その他
     var Ts;//駅間所要時間
     var Tss;//Tssはver3.1バグ回避用
+    var kusomusi = 0;//空走無視をするかどうか(するなら1,しないなら0)
+    var Agr;//空走無視補正もしくは勾配補正後の実質減速度
     var Err = 0;
 
     //数値取得
 
     //未入力判定
-    if (Ak == "" || Ag == "" || Vs == "" || Vf == "" || Vh == "" || Vd == "" || Xe == "" || S == "" || K == "" /*|| Fr == ""*/) {
+    if (Ak == "" || Ag == "" || Vs == "" || Vf == "" || Vh == "" || Vd == "" || Xe == "" || S == "" || K == "" || Fr == "") {
         Err = 6;
     } else {
 
@@ -157,8 +159,76 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
                 }
             }
 
+            //Err2(終速度達成不可)のとき、空走無視をすれば終速度まで達成できる場合がある
+            if (Err == 2 && Xgbef > 0) {//空走無視は前の区間で減速が行われている場合のみ許容される
+                Fr = 0;//空走0とする
+                Err = 0;//エラーログをいったんリセット
+                kusomusi = 1;//空走無視をする目印
+                //再切り下げ開始
+                while (Xk + Xg > Xe && Err !== 2) {
+                    Vh = Vh - 0.01;
+
+                    //切り下げ過ぎの時
+                    if (Vh < Vs || Vh < Vf) {
+                        if (Vs >= Vf) {
+                            Vh = Vs;
+                        } else {
+                            Vh = Vf;
+                        }
+
+                        //加減速距離の再計算
+                        if (Vs == Vh) {
+                            Xk = 0;//勾配が強い場合普通に計算すると値が出ず最終的に惰行距離の算出に影響が出る
+                            T0s = 0;
+                            T0h = 0;
+                        } else {
+                            T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
+                            T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
+                            Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                        }
+                        if (Vf == Vh) {
+                            Xg = 0;
+                        } else {
+                            Xg = (Vf ** 2 - Vh ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Vh * Fr);
+                        }
+
+                        //それでも無理な場合はエラー
+                        if (Xk + Xg > Xe) {
+                            Err = 2;
+                        }
+                    } else {
+                        //切り下げ過ぎでないとき    
+                        //加減速距離の再計算
+                        if (Vs == Vh) {
+                            Xk = 0;//勾配が強い場合普通に計算すると値が出ず最終的に惰行距離の算出に影響が出る
+                            T0s = 0;
+                            T0h = 0;
+                        } else {
+                            T0h = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vh))) / J;
+                            T0s = ((- A0) + Math.sqrt((A0 ** 2) + (2 * J * Vs))) / J;
+                            Xk = (J / 6) * (T0h ** 3 - T0s ** 3) + (A0 / 2) * (T0h ** 2 - T0s ** 2);
+                        }
+                        if (Vf == Vh) {
+                            Xg = 0;
+                        } else {
+                            Xg = (Vf ** 2 - Vh ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Vh * Fr);
+                        }
+                    }
+                }
+
+            }
+
             //ここまででエラーが出てないとき、所要時間の計算開始
             if (Err == 0) {
+                //減速度補正
+                if (kusomusi == 1) {
+                    Agr = (Vh ** 2 - Vf ** 2) / (2 * Xe);//空走無視のときの実質減速度
+                    //空走無視の減速度補正をしたときの減速距離(グラフ描画用)
+                    Xg = (Vf ** 2 - Vh ** 2) / (-2 * (Agr)) + (Vh * Fr);
+                } else {
+                    Agr = Ag + (S / (3.6 * K));//勾配補正の実質減速度
+                }
+
                 //加速時間
                 if (Vs == Vh) {
                     Tk = 0;
@@ -170,7 +240,7 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
                 if (Vf == Vh) {
                     Tg = 0;
                 } else {
-                    Tg = (Vf - Vh) / (- (Ag + (S / (3.6 * K)))) + Fr;
+                    Tg = (Vf - Vh) / (- Agr) + Fr;
                 }
 
                 //所要時間
@@ -223,10 +293,10 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
                 //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
                 var Vgraphgensoku = Vh / 3.6;
                 while (Vgraphgensoku > Vf) {
-                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
                     var Vgraphsitengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
                     Vgraphgensoku -= 1;
-                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
                     var Vgraphsyutengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
                     graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo) + '" y2="' + Vgraphsyutengensoku + '" stroke="#00ffff" stroke-width="4px"/>';
                 }
@@ -242,63 +312,70 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
                     Tgraphkasoku += 1;
                     var Xgparhsyutenkasoku = 75 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 505 / Xe15);
                     var Vgparhsyutenkasoku = 167 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 160 / Vd);
-                    graph.innerHTML += '<line x1="' + (Xgparhsitenkasoku + Xesumzahyo +590) + '" y1="' + Vgparhsitenkasoku + '" x2="' + (Xgparhsyutenkasoku + Xesumzahyo +590) + '" y2="' + Vgparhsyutenkasoku + '" stroke="rgb(255, 103, 103)" stroke-width="4px"/>';
+                    graph.innerHTML += '<line x1="' + (Xgparhsitenkasoku + Xesumzahyo + 590) + '" y1="' + Vgparhsitenkasoku + '" x2="' + (Xgparhsyutenkasoku + Xesumzahyo + 590) + '" y2="' + Vgparhsyutenkasoku + '" stroke="rgb(255, 103, 103)" stroke-width="4px"/>';
                 }
                 //惰行区間の描画
-                graph.innerHTML += '<line x1="' + (75 + ((Xk + Xesum) * 505 / Xe15) +590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) +590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(255, 245, 153)" stroke-width="4px"/>';
+                graph.innerHTML += '<line x1="' + (75 + ((Xk + Xesum) * 505 / Xe15) + 590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) + 590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(255, 245, 153)" stroke-width="4px"/>';
                 //空走区間の描画
                 Xfr = Fr * Vh / 3.6;
-                graph.innerHTML += '<line x1="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) +590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xfr + Xesum) * 505 / Xe15) +590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(153, 255, 153)" stroke-width="4px"/>';
+                graph.innerHTML += '<line x1="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) + 590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xfr + Xesum) * 505 / Xe15) + 590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(153, 255, 153)" stroke-width="4px"/>';
                 //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
                 var Vgraphgensoku = Vh / 3.6;
                 while (Vgraphgensoku > Vf) {
-                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
                     var Vgraphsitengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
                     Vgraphgensoku -= 1;
-                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Ag + (S / (3.6 * K)))) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
                     var Vgraphsyutengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
-                    graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo +590) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo +590) + '" y2="' + Vgraphsyutengensoku + '" stroke="#00ffff" stroke-width="4px"/>';
+                    graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo + 590) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo + 590) + '" y2="' + Vgraphsyutengensoku + '" stroke="#00ffff" stroke-width="4px"/>';
                 }
             }
 
-            return [Ts, Vh];
+            Xgbef = Xg;//Xgbefを確定
+            return [Ts, Vh, Xgbef];
         }
 
         if (Err == 1) {
             Ts = "Err1";
             Vh = "Err1";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
         }
 
         if (Err == 2) {
             Ts = "Err2";
             Vh = "Err2";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
 
         }
 
         if (Err == 3) {
             Ts = "Err3";
             Vh = "Err3";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
         }
 
         if (Err == 4) {
             Ts = "Err4";
             Vh = "Err4";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
         }
 
         if (Err == 5) {
             Ts = "Err5";
             Vh = "Err5";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
         }
 
         if (Err == 7) {
             Ts = "Err7";
             Vh = "Err7";
-            return [Ts, Vh];
+            Xgbef = 0;
+            return [Ts, Vh, Xgbef];
         }
 
     }
@@ -306,7 +383,8 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK }) {
     if (Err == 6) {
         Ts = "--";
         Vh = "--";
-        return [Ts, Vh];
+        Xgbef = 0;
+        return [Ts, Vh, Xgbef];
     }
 
 }
@@ -359,13 +437,14 @@ function main() {
     var K;//定数
     var Fr;//空走時間
     var NorK = 1;//今上りの計算中か下りの計算中か(グラフ描画用)(上りなら1、下りなら0)
+    var Xgbef;//前の区間での減速距離(空走距離無視判定用)
 
     //車両諸元の取得(固定値)
     Ak = document.getElementById("Ak").value;
     Ag = document.getElementById("Ag").value;
     Vd = document.getElementById("Vd").value;
     K = document.getElementById("K").value;
-    Fr = 0;//空走時間は暫定的に固定
+    Fr = document.getElementById("Fr").value;
 
     //総距離の取得(グラフ用)
     var Xe15;
@@ -395,35 +474,71 @@ function main() {
     grapharea.innerHTML = '<svg width="1180" height="200" id="graph"></svg>';
     //グラフのIDをとっておく
     var graph = document.getElementById('graph');
-    //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=167である)
-    var vline = 10;
-    while (vline <= Vd) {
-        var vlinenoyzahyo = 167 - (vline * 160 / Vd);
-        if (vline % 50 == 0) {
-            graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-            graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-            graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-            graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-        } else {
-            graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
-            graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+    if (Vd <= 200) {
+        //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=167である)
+        var vline = 10;
+        while (vline <= Vd) {
+            var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+            if (vline % 50 == 0) {
+                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+            } else {
+                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+            }
+            vline += 10;
         }
-        vline += 10;
+    } else {
+        //設計最高速度が201km/h以上の時線を半分に間引く
+        var vline = 20;
+        while (vline <= Vd) {
+            var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+            if (vline % 100 == 0) {
+                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+            } else {
+                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+            }
+            vline += 20;
+        }
     }
-    //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上では上りはXeがx=580,原点がx=75、下りはそれぞれに590を足す)
-    var xline = 100;
-    while (xline <= Xe15) {
-        var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
-        if (xline % 500 == 0) {
-            graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-            graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
-            graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-            graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
-        } else {
-            graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
-            graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+    if (Xe15 <= 5000) {
+        //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上では上りはXeがx=580,原点がx=75、下りはそれぞれに590を足す)
+        var xline = 100;
+        while (xline <= Xe15) {
+            var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+            if (xline % 500 == 0) {
+                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+            } else {
+                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+            }
+            xline += 100;
         }
-        xline += 100;
+    } else {
+        //総距離が5001m以上の時線を半分に間引く
+        var xline = 200;
+        while (xline <= Xe15) {
+            var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+            if (xline % 1000 == 0) {
+                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+            } else {
+                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+            }
+            xline += 200;
+        }
     }
     //運転曲線の軸とラベルの描画
     var graph = document.getElementById('graph');
@@ -440,13 +555,14 @@ function main() {
     Xe = document.getElementById("Xe1").value;
     S = document.getElementById("S1").value;
     //上り1区間目の計算と数値取得
-    var resultn1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultn1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsn1 = document.getElementById('ResultTsn1');
     ResultTsn1.innerHTML = resultn1[0];
     var ResultVhn1 = document.getElementById('ResultVhn1');
     ResultVhn1.innerHTML = resultn1[1];
-
+    //Xgbefを更新
+    Xgbef = resultn1[2];
     //上り1区間目の距離を累計距離に加算
     if (Xe1 !== "") {
         Xesum += parseFloat(Xe1);
@@ -459,13 +575,14 @@ function main() {
     Xe = document.getElementById("Xe2").value;
     S = document.getElementById("S2").value;
     //上り2区間目の計算と数値取得
-    var resultn2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultn2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsn2 = document.getElementById('ResultTsn2');
     ResultTsn2.innerHTML = resultn2[0];
     var ResultVhn2 = document.getElementById('ResultVhn2');
     ResultVhn2.innerHTML = resultn2[1];
-
+    //Xgbefを更新
+    Xgbef = resultn2[2];
     //上り2区間目の距離を累計距離に加算
     if (Xe2 !== "") {
         Xesum += parseFloat(Xe2);
@@ -478,13 +595,14 @@ function main() {
     Xe = document.getElementById("Xe3").value;
     S = document.getElementById("S3").value;
     //上り3区間目の計算と数値取得
-    var resultn3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultn3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsn3 = document.getElementById('ResultTsn3');
     ResultTsn3.innerHTML = resultn3[0];
     var ResultVhn3 = document.getElementById('ResultVhn3');
     ResultVhn3.innerHTML = resultn3[1];
-
+    //Xgbefを更新
+    Xgbef = resultn3[2];
     //上り3区間目の距離を累計距離に加算
     if (Xe3 !== "") {
         Xesum += parseFloat(Xe3);
@@ -497,13 +615,14 @@ function main() {
     Xe = document.getElementById("Xe4").value;
     S = document.getElementById("S4").value;
     //上り4区間目の計算と数値取得
-    var resultn4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultn4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsn4 = document.getElementById('ResultTsn4');
     ResultTsn4.innerHTML = resultn4[0];
     var ResultVhn4 = document.getElementById('ResultVhn4');
     ResultVhn4.innerHTML = resultn4[1];
-
+    //Xgbefを更新
+    Xgbef = resultn4[2];
     //上り4区間目の距離を累計距離に加算
     if (Xe4 !== "") {
         Xesum += parseFloat(Xe4);
@@ -516,7 +635,7 @@ function main() {
     Xe = document.getElementById("Xe5").value;
     S = document.getElementById("S5").value;
     //上り5区間目の計算と数値取得
-    var resultn5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultn5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsn5 = document.getElementById('ResultTsn5');
     ResultTsn5.innerHTML = resultn5[0];
@@ -525,6 +644,7 @@ function main() {
 
 
     NorK = 0;//下りの計算に切り替え
+    Xgbef = 0;//Xgbefの初期化
     //前区間までの累計距離(グラフ用)を初期化
     Xesum = 0;
     //下り5区間目の渡す区間値を取得
@@ -534,13 +654,14 @@ function main() {
     Xe = document.getElementById("Xe5").value;
     S = document.getElementById("S5").value;
     //下り5区間目の計算と数値取得
-    var resultk5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultk5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsk5 = document.getElementById('ResultTsk5');
     ResultTsk5.innerHTML = resultk5[0];
     var ResultVhk5 = document.getElementById('ResultVhk5');
     ResultVhk5.innerHTML = resultk5[1];
-
+    //Xgbefを更新
+    Xgbef = resultk5[2];
     //下り5区間目の距離を累計距離に加算
     if (Xe5 !== "") {
         Xesum += parseFloat(Xe5);
@@ -553,13 +674,14 @@ function main() {
     Xe = document.getElementById("Xe4").value;
     S = document.getElementById("S4").value;
     //下り4区間目の計算と数値取得
-    var resultk4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultk4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsk4 = document.getElementById('ResultTsk4');
     ResultTsk4.innerHTML = resultk4[0];
     var ResultVhk4 = document.getElementById('ResultVhk4');
     ResultVhk4.innerHTML = resultk4[1];
-
+    //Xgbefを更新
+    Xgbef = resultk4[2];
     //下り4区間目の距離を累計距離に加算
     if (Xe4 !== "") {
         Xesum += parseFloat(Xe4);
@@ -572,13 +694,14 @@ function main() {
     Xe = document.getElementById("Xe3").value;
     S = document.getElementById("S3").value;
     //下り3区間目の計算と数値取得
-    var resultk3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultk3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsk3 = document.getElementById('ResultTsk3');
     ResultTsk3.innerHTML = resultk3[0];
     var ResultVhk3 = document.getElementById('ResultVhk3');
     ResultVhk3.innerHTML = resultk3[1];
-
+    //Xgbefを更新
+    Xgbef = resultk3[2];
     //下り3区間目の距離を累計距離に加算
     if (Xe3 !== "") {
         Xesum += parseFloat(Xe3);
@@ -591,13 +714,14 @@ function main() {
     Xe = document.getElementById("Xe2").value;
     S = document.getElementById("S2").value;
     //下り2区間目の計算と数値取得
-    var resultk2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultk2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsk2 = document.getElementById('ResultTsk2');
     ResultTsk2.innerHTML = resultk2[0];
     var ResultVhk2 = document.getElementById('ResultVhk2');
     ResultVhk2.innerHTML = resultk2[1];
-
+    //Xgbefを更新
+    Xgbef = resultk2[2];
     //下り2区間目の距離を累計距離に加算
     if (Xe2 !== "") {
         Xesum += parseFloat(Xe2);
@@ -610,7 +734,7 @@ function main() {
     Xe = document.getElementById("Xe1").value;
     S = document.getElementById("S1").value;
     //下り1区間目の計算と数値取得
-    var resultk1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK });
+    var resultk1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
     //結果表示
     var ResultTsk1 = document.getElementById('ResultTsk1');
     ResultTsk1.innerHTML = resultk1[0];
@@ -619,9 +743,28 @@ function main() {
 }
 
 
+//空走時間の参考値表示機能の関数
+function kusojikan() {
+    const clickBtn = document.getElementById('click-btn');
+    const popupWrapper = document.getElementById('popup-wrapper');
+    const close = document.getElementById('close');
+
+    // ボタンをクリックしたときにポップアップを表示させる
+    clickBtn.addEventListener('click', () => {
+        popupWrapper.style.display = "block";
+    });
+
+    // ポップアップの外側又は「x」のマークをクリックしたときポップアップを閉じる
+    popupWrapper.addEventListener('click', e => {
+        if (e.target.id === popupWrapper.id || e.target.id === close.id) {
+            popupWrapper.style.display = 'none';
+        }
+    });
+}
+
 //自動更新システム
 timestamp = 0;
-var updateinterval=10;//更新間隔,デフォルトは10フレームごと
+var updateinterval = 10;//更新間隔,デフォルトは10フレームごと
 
 function update() {
 
@@ -631,7 +774,7 @@ function update() {
     if (timestamp % updateinterval == 0) {
         main();
         curvecalc();
-
+        kusojikan();
         //更新間隔の変更を反映
         updateinterval = document.getElementById("updateinterval").value;
         if (updateinterval == "" || updateinterval <= 0) {
