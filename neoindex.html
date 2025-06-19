@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="discription" content="架空鉄道のダイヤ、時刻表作成に必要な駅間所要時間を算出するツールです。柔軟に条件指定ができる割に簡単な入力で扱える手軽なシロモノです。5区間双方向同時計算 運転曲線描画 加速度自動減衰 最高速度自動切下 加減速度勾配補正 曲線制限速度計算">
+    <title>架空鉄道向け所要時間計算機V5multi</title>
+    <link rel="shortcut icon" href="./img/favicon48multi.ico">
+</head>
+
+<body>
+    <table style="border:0;">
+        <tr>
+            <td><span style="font-size: 120%;color: rgb(255, 103, 103);font-weight: bold;">架空鉄道向け所要時間計算機V5</span><span
+                    style="font-family: Impact;font-size: 80%;color: #ddd;"><i>multi</i></span></td>
+            <td width="650px"></td>
+            <td style="font-size: 50%;color: #aaa;font-weight: bold;text-align: end;">運転曲線描画<br>5区間双方向同時計算</td>
+            <td style="font-size: 50%;color: #aaa;font-weight: bold;text-align: end;">曲線制限速度計算<br>加速度自動減衰</td>
+            <td style="font-size: 50%;color: #aaa;font-weight: bold;text-align: end;">最高速度自動切下<br>加減速度勾配補正</td>
+        </tr>
+    </table>
+    <div class="container">
+    </div>
+    <p>当機は速度が上がるにつれ加速度を自動的に減衰させるシステムを実装したばかりです。故にまだ発見されてないバグのある可能性があります。安定している旧バージョン(加速度一定版)は<a
+            href="indexV4.html">コチラ</a>。</p>
+    <p style="font-weight:bold;color:rgb(255, 103, 103);">
+        当機は指定された制限速度が大きい場合加速可能な速度まで最高速度を自動的に切り下げる機能を搭載していますが、極端に大きな値を指定した場合、計算処理が終了せず値が更新されないことやページが固まる場合がございます。ご注意ください。
+    </p>
+    <h3 class="h3">バージョン履歴</h3>
+    <p class="h3">Ver1.0 2021.8/17</p>
+    <p class="h3">Ver1.1 2021.10/23 結果表示画面の微調整</p>
+    <p class="h3">Ver1.2 2022.5/5 一部計算が終了しない問題を修正</p>
+    <p class="h3"> Ver2.0 2022.5/5　勾配などを考慮に入れた計算を実装</p>
+    <p class="h3">Ver2.1 2022.5/7 実質加減速度が0になることによる問題､制動距離により減速距離が0にならない問題を修正</p>
+    <p class="h3">Ver2.2 2022.5/23 空走距離に関する修正</p>
+    <p class="h3">Ver3.0 2025.5/25 数値入力場所をポップアップウィンドウから画面上フォームに改良、リアルタイム計算の実装、UIの大幅な変更</p>
+    <p class="h3">Ver3.1 2025.5/27 特定の値で所要時間が10倍以上になる問題に対して暫定的な処置を実行</p>
+    <p class="h3">Ver4.0 2025.5/28 曲線制限速度計算をする補助ツールを実装</p>
+    <p class="h3">Ver5.0 2025.6/4 加速度自動減衰システム(等躍度運動への近似)を実装</p>
+    <p class="h3">Ver6.0 2025.6/7 運転曲線描画機能を実装</p>
+    <p class="h3">Ver6.1 2025.6/10 勾配の急な区間で初速度から加速しない場合に値が算出されない問題の修正</p>
+    <p class="h3">Ver7.0 2025.6/12 5区間双方向同時計算が可能な<span style="font-family: Impact;font-size: 80%;color: #ddd;"><i>multi</i></span>バージョンを実装</p>
+    <p class="h3">Ver7.1 2025.6/14 複数区間にまたがって連続的に減速する場合に減速開始時以外の空走を自動的に無視する機能の実装、グラフ補助線の自動本数調整の実装、その他UIの軽微な改良。</p>
+
+    <p class="h3" style="word-break: break-all;">
+        勾配による補正については『鉄道電気技術者のための信号概論　閉そく装置』(日本鉄道電気技術協会、2008年4月)が引用されている『電車はブレーキをかけてから何mで停止できる？新幹線は？列車脱線事故の京浜急行電鉄は？』https://www.excite.co.jp/news/article/Bizjournal_202001_post_134461/
+        (梅原淳、2020年1月)に示されている式を参考にしている。
+    </p>
+
+    <a href="https://x.com/ASHminecra" style="color:white;">
+        <p>製作者Xアカウント</p>
+    </a>
+    <a href="calc.html" style="color:white;">
+        <p>架空鉄道向け所要時間計算機における計算の概要</p>
+    </a>
+
+    <script type="text/javascript" src="TIMEV5.multi.js"></script>
+
+    <style>
+        body {
+            color: #fff;
+            background-color: rgb(0, 0, 0);
+        }
+
+        h1:hover {
+            color: #0ff;
+        }
+
+        .h3:hover {
+            color: #0ff;
+        }
+
+        p:hover {
+            color: #0ff;
+        }
+
+        input {
+            width: 50px;
+            font-size: 110%;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-align: end;
+            background-color: #383838;
+            color: rgb(255, 103, 103);
+        }
+
+        .inputblue {
+            color: #0ff;
+        }
+
+        .container {
+            width: 1220px;
+            justify-content: space-between;
+            border-width: 10px;
+            border-color: #383838;
+            border-style: solid;
+        }
+
+        .log {
+            border: 1px solid #aaa;
+            width: 1180px;
+            margin: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .form {
+            border: 1px solid #aaa;
+            width: 1180px;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .curve {
+            border: 1px solid #aaa;
+            padding-left: 10px;
+            padding-right: 10px;
+            background-color: #282828;
+        }
+
+        .small {
+            font-size: 10px;
+            color: #ddd;
+        }
+
+        .small2 {
+            font-size: 50%;
+            color: #aaa;
+            border-bottom: 1.5px solid #aaa;
+        }
+
+        .trbd {
+            font-weight: bold;
+        }
+
+        .trbd:hover {
+            font-size: 105%;
+            color: rgb(255, 103, 103);
+        }
+
+        .trbd2 {
+            width: 250px;
+            font-weight: bold;
+        }
+
+        .trbd3 {
+            font-weight: bold;
+            font-size: 70%;
+            color: #ddd;
+            text-align: center;
+        }
+
+        text {
+            fill: white;
+            font-weight: bold;
+        }
+
+        ::placeholder {
+            font-size: 12px;
+        }
+
+        #popup-wrapper {
+            background-color: rgba(0, 0, 0, .5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #popup-inside {
+            text-align: center;
+            width: 100%;
+            max-width: 150px;
+            background: #383838;
+            position: relative;
+            top:400px;
+            left: 265px;
+            font-size: 10px;
+            color:#ddd;
+            font-weight: normal;
+        }
+
+        #close {
+              position: absolute;
+              top: 0;
+              right: 5px;
+              cursor: pointer;
+        }
+    </style>
+
+
+</body>
+
+</html>
