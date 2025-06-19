@@ -1,0 +1,357 @@
+<table style="border:0;">
+  <tr>
+    <td style="font-size: 70%;border-bottom: 1.5px solid #aaa;" width="158" colspan="2">車　両　諸　元</td>
+    <td>
+    </td>
+    <td style="font-size: 70%;border-bottom: 1.5px solid #aaa;" width="125" colspan="2">区　間　デ　ー　タ</td>
+    <td class="trbd3" width="70">駅,地点</td>
+    <td class="trbd3" width="70" style="background-color: #383838;">区間1</td>
+    <td class="trbd3" width="70">駅,地点</td>
+    <td class="trbd3" width="70" style="background-color: #383838;">区間2</td>
+    <td class="trbd3" width="70">駅,地点</td>
+    <td class="trbd3" width="70" style="background-color: #383838;">区間3</td>
+    <td class="trbd3" width="70">駅,地点</td>
+    <td class="trbd3" width="70" style="background-color: #383838;">区間4</td>
+    <td class="trbd3" width="70">駅,地点</td>
+    <td class="trbd3" width="70" style="background-color: #383838;">区間5</td>
+    <td class="trbd3" width="70">駅,地点</td>
+  </tr>
+  <tr>
+    <td class="trbd" colspan="2">設計最高速度[km/h]</td>
+    <td>
+      <input type="number" id="Vd" placeholder="半角数字">
+    </td>
+    <td class="trbd" colspan="2" rowspan="2">通過速度[km/h]</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn1" placeholder="半角数字">
+    </td>
+    <td rowspan="2" class="small" style="background-color: #383838;text-align: center;font-weight: bold;">→上り→
+      <br>
+      <span style="font-weight: normal;">(停車時は0)</span>
+      <br>←下り←</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn2" placeholder="半角数字">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">→</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn3" placeholder="半角数字">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">→</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn4" placeholder="半角数字">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">→</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn5" placeholder="半角数字">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">→</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vn6" placeholder="半角数字">
+    </td>
+  </tr>
+  <tr>
+    <td class="trbd" colspan="2">起動加速度[km/h/s]</td>
+    <td>
+      <input type="number" id="Ak" placeholder="半角数字">
+    </td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk1" placeholder="半角数字" class="inputblue">
+    </td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk2" placeholder="半角数字" class="inputblue">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">←</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk3" placeholder="半角数字" class="inputblue">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">←</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk4" placeholder="半角数字" class="inputblue">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">←</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk5" placeholder="半角数字" class="inputblue">
+    </td>
+    <td class="small" style="background-color: #383838;text-align: center;font-weight: bold;">←</td>
+    <td style="text-align: center;">
+      <input type="number" id="Vk6" placeholder="半角数字" class="inputblue">
+    </td>
+  </tr>
+  <tr>
+    <td class="trbd" colspan="2">減速度[km/h/s]</td>
+    <td>
+      <input type="number" id="Ag" placeholder="正の半角数字">
+    </td>
+    <td class="trbd" colspan="2">区間距離[m]</td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Xe1" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Xe2" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Xe3" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Xe4" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Xe5" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+  </tr>
+  <tr>
+    <td class="trbd" colspan="2">空走時間[秒]
+      <button id="click-btn">参考値</button>
+      <div id="popup-wrapper">
+        <div id="popup-inside">参考)電車:2-4秒、客車列車:5両で6秒､10両で8秒､15両で11.3秒(いずれも機関車含む)、気動車:電磁式ブレーキがある時4秒､ない時客車列車と同じ</div>
+      </div>
+    </td>
+    <td>
+      <input type="number" id="Fr" placeholder="半角数字">
+    </td>
+    <td class="trbd" colspan="2">制限速度[km/h]</td>
+    <td class="small" style="text-align: end;">制限なしの場合
+      <br>営業最高速度</td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Vh1" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Vh2" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Vh3" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Vh4" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="Vh5" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+  </tr>
+  <tr>
+    <td class="trbd">係数</td>
+    <td class="small" style="text-align:end;">参考)動力集中方式:30
+      <br>動力分散方式:31</td>
+    <td>
+      <input type="number" id="K" placeholder="半角数字">
+    </td>
+    <td class="trbd" width="72">勾配[‰]</td>
+    <td class="small" width="123" colspan="2" style="text-align: end;">登りは正で下りは負
+      <br>考慮しないときや平坦時:0</td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="S1" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="S2" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="S3" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="S4" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+    <td style="text-align: center;background-color: #383838;">
+      <input type="number" id="S5" placeholder="半角数字">
+    </td>
+    <td>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" rowspan="5">
+      <div class="curve">
+        <table style="border:0;">
+          <tr>
+            <td colspan="3" style="font-size: 70%;border-bottom: 1.5px solid #aaa;">補　助　計　算　機</td>
+          </tr>
+          <tr>
+            <td colspan="3" style="font-size: 130%;font-weight: bold;">曲線制限速度</td>
+          </tr>
+          <tr>
+            <td colspan="3" style="text-align: end;">
+              <span id="rec" style="font-size: 130%;color:rgb(255, 103, 103);font-family: Impact;font-weight: bold;">
+              </span>
+              <span style="font-size: 110%;font-weight: bold;">km/h</span>
+              <span>(5㌔刻み)</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="trbd" width="100px">曲線半径[m]</td>
+            <td style="text-align: end;">
+              <input type="number" id="Rc" placeholder="半角数字">
+            </td>
+          </tr>
+          <tr>
+            <td class="trbd">係数</td>
+            <td class="small">在来線:3.5
+              <br>新幹線:4.8</td>
+            <td style="text-align: end;">
+              <input type="number" id="Kc" placeholder="半角数字">
+            </td>
+          </tr>
+          <!--<tr><td style = "font-size: 130%;font-weight: bold;">600m条項判定</td></tr>
+                                    <tr><td class ="trbd" style="font-size: 70%;">非常ブレーキ減速度[km/h/s]</td></tr>
+                                    <tr><td style="text-align: end;"><input type="number" id="Kc" placeholder="半角数字"></td></tr>-->
+        </table>
+      </div>
+    </td>
+    <td colspan="2" style="font-size: 70%;border-bottom: 1.5px solid #aaa;">計　算　結　果</td>
+    <td>
+    </td>
+    <td style="background-color: #383838;">
+    </td>
+    <td>
+    </td>
+    <td style="background-color: #383838;">
+    </td>
+    <td>
+    </td>
+    <td style="background-color: #383838;">
+    </td>
+    <td>
+    </td>
+    <td style="background-color: #383838;">
+    </td>
+    <td>
+    </td>
+    <td style="background-color: #383838;">
+    </td>
+    <td>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" style="font-weight: bold;font-size: 18px;text-align: start;">最高速度
+      <span style="font-size: 13px;">上り</span>
+    </td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultVhn1">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultVhn2">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultVhn3">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultVhn4">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultVhn5">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">km/h</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="font-weight: bold;font-size: 25px;text-align: start;">所要時間
+      <span style="font-size: 13px;">上り</span>
+    </td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultTsn1">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultTsn2">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultTsn3">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultTsn4">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">→</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: rgb(255, 103, 103);" id="ResultTsn5">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">秒</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="font-weight: bold;font-size: 18px;text-align: start;">最高速度
+      <span style="font-size: 13px;">下り</span>
+    </td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultVhk1">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultVhk2">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultVhk3">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultVhk4">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 18px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultVhk5">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">km/h</td>
+  </tr>
+  <tr>
+    <td colspan="2" style="font-weight: bold;font-size: 25px;text-align: start;">所要時間
+      <span style="font-size: 13px;">下り</span>
+    </td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultTsk1">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultTsk2">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultTsk3">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultTsk4">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">←</td>
+    <td style="text-align: center;font-size: 25px;background-color: #383838;font-family: Impact;color: #0ff;" id="ResultTsk5">--</td>
+    <td style="font-weight: bold;font-size: 18px;text-align: center;">秒</td>
+  </tr>
+  <div class="log">
+    <table style="border:0;">
+      <tr>
+        <td width="170" style="font-size: 70%;border-bottom: 1.5px solid #aaa;">エ　ラ　ー　コ　ー　ド　一　覧</td>
+        <td width="700">
+        </td>
+        <td width="150" style="font-size: 70%;border-bottom: 1.5px solid #aaa;">オ　プ　シ　ョ　ン</td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err1</span>...初速度または終速度もしくは制限速度を設計最高速度よりも大きく設定しないでください！</td>
+        <td class="trbd">更新間隔[フレーム]</td>
+        <td>
+          <input type="number" id="updateinterval" placeholder="半角数字">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err2</span>...所定キョリ内で終速度まで減速又は加速できません！値を設定し直すか、次の区間と統合するなどしてください。</td>
+        <td class="small" colspan="2" rowspan="2" style="text-align: start;">リアルタイム更新機能の更新間隔を設定できます。
+          <br>デフォルトは10ですが、パソコンの様子がおかしい場合は数値を大きくしてください。更新スピードは遅くなりますが、処理が落ち着きます。</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err3</span>...初速度または終速度を制限速度よりも大きく設定しないでください！</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err4</span>...勾配がきつすぎて登れません！加速度を大きくしてください。</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err5</span>...勾配がきつすぎて止まれません！減速度を大きくしてください。</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span style="font-size: 25px;font-family: Impact;color: rgb(255, 103, 103);">Err7</span>...勾配がきつすぎて終速度まで到達できません！終速度を小さくしてください。</td>
+      </tr>
+    </table>
+  </div>
+</table>
