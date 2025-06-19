@@ -2,7 +2,7 @@ function loadPage(htmlPath, scriptPath) {
   fetch(htmlPath)
     .then(res => res.text())
     .then(html => {
-      document.getElementById('content').innerHTML = html;
+      document.getElementById('container').innerHTML = html;
 
       // 古いスクリプトが残らないように一度削除
       const oldScript = document.getElementById('dynamicScript');
@@ -16,10 +16,14 @@ function loadPage(htmlPath, scriptPath) {
     });
 }
 
-document.getElementById('loadA').addEventListener('click', () => {
-  loadPage('A.html', 'A.js');
+document.getElementById('loadV5multi').addEventListener('click', () => {
+  loadPage('container.V5.multi.html', 'TIMEV5.multi.js');
 });
 
-document.getElementById('loadB').addEventListener('click', () => {
-  loadPage('B.html', 'B.js');
+document.getElementById('loadV5').addEventListener('click', () => {
+  loadPage('container.V5.html', 'TIMEV5.js');
+});
+
+document.getElementById('loadV4multi').addEventListener('click', () => {
+  loadPage('container.V4.multi.html', 'TIMEV4.multi.js');
 });
