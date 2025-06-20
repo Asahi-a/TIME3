@@ -24,7 +24,7 @@ document.getElementById('loadV5').addEventListener('click', () => {
   loadPage('container.V5.html', 'TIMEV5.js');
 });
 
-document.getElementById('loadV4multi').addEventListener('click', () => {
+document.getElementById('loadV4').addEventListener('click', () => {
   loadPage('container.V4.html', 'TIMEV4.js');
 });
 
