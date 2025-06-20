@@ -1,5 +1,7 @@
 //注意！！！！べき乗の記号は^ではなく**を用いること！！！！長らく解決しなかったバグの原因がこれでした！！！！！！！！！！！！！！！！...てか前バージョンのときもべき乗周りがバグってたからかVh*Vhみたいにしてて草()
 
+function V5multi() {
+
 //計算関数
 function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef }) {
 
@@ -785,3 +787,7 @@ function update() {
 }
 
 update();
+
+}
+
+V5multi();
