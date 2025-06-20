@@ -1,4 +1,4 @@
-function V4(){
+(function V4(){
 function calc() {
 
   var Ak;//加速度
@@ -243,5 +243,4 @@ function update() {
 
 update();
 
-}
-V4();
+})();
