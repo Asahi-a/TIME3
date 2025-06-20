@@ -788,4 +788,4 @@ function update() {
 
 update();
 
-})V5multi();
+})();
