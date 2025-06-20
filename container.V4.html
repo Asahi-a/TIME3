@@ -1,118 +1,49 @@
 <div class="result">
-  <div id="hTs">
-  </div>
-  <div class="form">
-    <div class="calc">
-      <table style="border:0;">
-        <tr>
-          <td class="trbd">駅間距離[m]</td>
-          <td>
-            <input type="number" id="Xe" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd">制限速度[km/h]</td>
-          <td>
-            <input type="number" id="Vh" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="small">参考)制限速度のない区間の場合は車両の最高速度</td>
-        </tr>
-        <tr>
-          <td class="trbd">加速度[km/h/s]</td>
-          <td>
-            <input type="number" id="Ak" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd">減速度[km/h/s]</td>
-          <td>
-            <input type="number" id="Ag" placeholder="正の半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd">初速度[km/h]</td>
-          <td>
-            <input type="number" id="Vs" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd">終速度[km/h]</td>
-          <td>
-            <input type="number" id="Vf" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd">勾配[‰]</td>
-          <td>
-            <input type="number" id="S" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="small">参考)登りは正で下りは負。考慮しないときや平坦時は0</td>
-        </tr>
-        <tr>
-          <td class="trbd">空走時間[秒]</td>
-          <td>
-            <input type="number" id="Fr" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="small">参考)電車:2-4秒、客車列車:5両で6秒､10両で8秒､15両で11.3秒(いずれも機関車含む)、気動車:電磁式ブレーキがある時4秒､ない時客車列車と同じ</td>
-        </tr>
-        <tr>
-          <td class="trbd">係数</td>
-          <td>
-            <input type="number" id="K" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" class="small">参考)動力集中方式:30、動力分散方式:31</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <div class="curve">
-    <div>
-      <table style="border:0;">
-        <tr>
-          <td style="font-size: 70%;border-bottom: 1.5px solid #aaa;">補　助　計　算　機</td>
-        </tr>
-        <tr>
-          <td style="font-size: 130%;font-weight: bold;">曲線制限速度</td>
-        </tr>
-        <tr>
-          <td style="text-align: end;">
-            <span id="rec" style="font-size: 130%;color:rgb(255, 103, 103);font-family: Impact;font-weight: bold;">
-            </span>
-            <span style="font-size: 110%;font-weight: bold;">km/h</span>
-            <span>(5㌔刻み)</span>
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd" style="font-size: 70%;">曲線半径[m]</td>
-        </tr>
-        <tr>
-          <td style="text-align: end;">
-            <input type="number" id="Rc" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="trbd" style="font-size: 70%;">係数</td>
-        </tr>
-        <tr>
-          <td style="text-align: end;">
-            <input type="number" id="Kc" placeholder="半角数字">
-          </td>
-        </tr>
-        <tr>
-          <td class="small2">参考)在来線:3.5、新幹線:4.8</td>
-        </tr>
-        <!--<tr><td style = "font-size: 130%;font-weight: bold;">600m条項判定</td></tr>
+            <div id="hTs">
+            </div>
+        </div>
+        <div class="form">
+            <div class="calc">
+                <table style="border:0;">
+                    <tr><td class ="trbd">駅間距離[m]</td><td>
+                    <input type="number" id="Xe" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">制限速度[km/h]</td><td>
+                    <input type="number" id="Vh" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)制限速度のない区間の場合は車両の最高速度</td></tr>
+                    <tr><td class ="trbd">加速度[km/h/s]</td><td>
+                    <input type="number" id="Ak" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">減速度[km/h/s]</td><td>
+                    <input type="number" id="Ag" placeholder="正の半角数字"></td></tr>
+                    <tr><td class ="trbd">初速度[km/h]</td><td>
+                    <input type="number" id="Vs" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">終速度[km/h]</td><td>
+                    <input type="number" id="Vf" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd">勾配[‰]</td><td>
+                    <input type="number" id="S" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)登りは正で下りは負。考慮しないときや平坦時は0</td></tr>
+                    <tr><td class ="trbd">空走時間[秒]</td><td>
+                    <input type="number" id="Fr" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)電車:2-4秒、客車列車:5両で6秒､10両で8秒､15両で11.3秒(いずれも機関車含む)、気動車:電磁式ブレーキがある時4秒､ない時客車列車と同じ</td></tr>
+                    <tr><td class ="trbd">係数</td><td>
+                    <input type="number" id="K" placeholder="半角数字"></td></tr>
+                    <tr><td colspan="2" class="small">参考)動力集中方式:30、動力分散方式:31</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class = "curve">
+            <div>
+                <table style="border:0;">
+                    <tr><td style = "font-size: 70%;border-bottom: 1.5px solid #aaa;">補　助　計　算　機</td></tr>
+                    <tr><td style = "font-size: 130%;font-weight: bold;">曲線制限速度</td></tr>
+                    <tr><td style = "text-align: end;"><span id="rec" style = "font-size: 130%;color:rgb(255, 103, 103);font-family: Impact;font-weight: bold;"></span><span style = "font-size: 110%;font-weight: bold;">km/h</span><span>(5㌔刻み)</span></td></tr>
+                    <tr><td class ="trbd"style="font-size: 70%;">曲線半径[m]</td></tr>
+                    <tr><td style="text-align: end;"><input type="number" id="Rc" placeholder="半角数字"></td></tr>
+                    <tr><td class ="trbd"style="font-size: 70%;">係数</td></tr>
+                    <tr><td style="text-align: end;"><input type="number" id="Kc" placeholder="半角数字"></td></tr>
+                    <tr><td class="small2">参考)在来線:3.5、新幹線:4.8</td></tr>
+                <!--<tr><td style = "font-size: 130%;font-weight: bold;">600m条項判定</td></tr>
                     <tr><td class ="trbd" style="font-size: 70%;">非常ブレーキ減速度[km/h/s]</td></tr>
                     <tr><td style="text-align: end;"><input type="number" id="Kc" placeholder="半角数字"></td></tr>-->
-      </table>
-    </div>
-  </div>
-</div>
+                </table>
+            </div>
+        </div>
