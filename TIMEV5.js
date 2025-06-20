@@ -406,8 +406,8 @@ function update() {
         curvecalc();
     }
 
-})update();
-
 }
+    
+update();
 
-V5();
+})();
