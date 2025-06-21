@@ -217,7 +217,7 @@ function calcSg() {
             //ver6.0グラフ描画システム
             //グラフ描画のためのSVG要素を生成
             var graphareaSg = document.getElementById('graphareaSg');
-            graphareaSg.innerHTML = '<p class ="trbd2">運　転　曲　線</p><svg id = "graph" width = "480" height="270"></svg>';
+            graphareaSg.innerHTML = '<p class ="trbd2">運　転　曲　線</p><svg id = "graphSg" width = "480" height="270"></svg>';
             //グラフのIDをとっておく
             var graphSg = document.getElementById('graphSg');
 
