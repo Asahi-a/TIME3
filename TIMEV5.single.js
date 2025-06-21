@@ -165,7 +165,7 @@ function calcSg() {
                     } else {
                         T0hSg = ((- A0Sg) + Math.sqrt((A0Sg ** 2) + (2 * JSg * VhSg))) / JSg;
                         T0sSg = ((- A0Sg) + Math.sqrt((A0Sg ** 2) + (2 * JSg * VsSg))) / JSg;
-                        XkSg = (J / 6) * (T0hSg ** 3 - T0sSg ** 3) + (A0Sg / 2) * (T0hSg ** 2 - T0sSg ** 2);
+                        XkSg = (JSg / 6) * (T0hSg ** 3 - T0sSg ** 3) + (A0Sg / 2) * (T0hSg ** 2 - T0sSg ** 2);
                     }
                     if (VfSg == VhSg) {
                         XgSg = 0;
@@ -368,8 +368,8 @@ function curvecalcSg() {
     var VcSg;//曲線制限速度
     var ErrcSg = 0;//エラーの種類
 
-    RcSg = documentSg.getElementById("Rc").value;
-    KcSg = documentSg.getElementById("Kc").value;
+    RcSg = document.getElementById("RcSg").value;
+    KcSg = document.getElementById("KcSg").value;
 
 
     if (RcSg == "" || KcSg == "") {
