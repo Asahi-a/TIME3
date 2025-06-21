@@ -399,7 +399,7 @@ timestampSg = 0;
 function updateSg() {
 
     timestampSg++;
-    window.requestAnimationFrame(update);
+    window.requestAnimationFrame(updateSg);
 
     if (timestampSg % 10 == 0) {
         calcSg();
