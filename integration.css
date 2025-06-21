@@ -22,10 +22,12 @@ input {
     text-align: end;
     background-color: #383838;
     color: rgb(255, 103, 103);
+    border-radius: 0px;
 }
 
 .inputblue { /*multi*/
     color: #0ff;
+    border-radius: 0px;
 }
 
 button{
