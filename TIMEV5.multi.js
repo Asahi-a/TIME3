@@ -1,9 +1,6 @@
 //注意！！！！べき乗の記号は^ではなく**を用いること！！！！長らく解決しなかったバグの原因がこれでした！！！！！！！！！！！！！！！！...てか前バージョンのときもべき乗周りがバグってたからかVh*Vhみたいにしてて草()
-
-(function V5multi() {
-
 //計算関数
-function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef }) {
+function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode }) {
 
     //基本的なパラメータ
     var Tk;//加速時間
@@ -264,7 +261,7 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef }
         }
 
         //結果表示(数値は戻り値として返す)
-        if (Err == 0) {
+        if (Err == 0 && colormode == 0) {
 
 
             //ver6.0グラフ描画システム
@@ -330,6 +327,79 @@ function calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef }
                     var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
                     var Vgraphsyutengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
                     graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo + 590) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo + 590) + '" y2="' + Vgraphsyutengensoku + '" stroke="#00ffff" stroke-width="4px"/>';
+                }
+            }
+
+            Xgbef = Xg;//Xgbefを確定
+            return [Ts, Vh, Xgbef];
+        }
+
+        if (Err == 0 && colormode == 1) {
+
+
+            //ver6.0グラフ描画システム
+            //グラフのIDをとっておく
+            var graph = document.getElementById('graph');
+            //Vdを[km/h]に戻しておくことで単位換算を解決
+            Vd = Vd * 3.6;
+            //これはXesumによって座標がどれだけ変わるかの尺度(75を足すとグラフの原点がずれるので)
+            Xesumzahyo = (Xesum * 505 / Xe15);
+
+            //上りの場合のグラフ描画
+            if (NorK == 1) {
+                //加速区間の描画(1秒毎に区切ってtの媒介変数表示で直線を引く,T0sからT0hまでで計算し、x方向にx(T0s)だけ引く)
+                var Tgraphkasoku = T0s;
+                while (Tgraphkasoku < T0h) {
+                    var Xgparhsitenkasoku = 75 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 505 / Xe15);
+                    var Vgparhsitenkasoku = 167 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 160 / Vd);
+                    Tgraphkasoku += 1;
+                    var Xgparhsyutenkasoku = 75 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 505 / Xe15);
+                    var Vgparhsyutenkasoku = 167 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 160 / Vd);
+                    graph.innerHTML += '<line x1="' + (Xgparhsitenkasoku + Xesumzahyo) + '" y1="' + Vgparhsitenkasoku + '" x2="' + (Xgparhsyutenkasoku + Xesumzahyo) + '" y2="' + Vgparhsyutenkasoku + '" stroke="rgb(255, 168, 168)" stroke-width="4px"/>';
+                }
+                //惰行区間の描画
+                graph.innerHTML += '<line x1="' + (75 + ((Xk + Xesum) * 505 / Xe15)) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15)) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(255, 254, 183)" stroke-width="4px"/>';
+                //空走区間の描画
+                Xfr = Fr * Vh / 3.6;
+                graph.innerHTML += '<line x1="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15)) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xfr + Xesum) * 505 / Xe15)) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(145, 254, 200)" stroke-width="4px"/>';
+                //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
+                var Vgraphgensoku = Vh / 3.6;
+                while (Vgraphgensoku > Vf) {
+                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Vgraphsitengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
+                    Vgraphgensoku -= 1;
+                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Vgraphsyutengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
+                    graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo) + '" y2="' + Vgraphsyutengensoku + '" stroke="rgb(190, 255, 254)" stroke-width="4px"/>';
+                }
+            }
+
+            //下りの場合のグラフ描画(x方向の座標に全て590を足す)
+            if (NorK == 0) {
+                //加速区間の描画(1秒毎に区切ってtの媒介変数表示で直線を引く,T0sからT0hまでで計算し、x方向にx(T0s)だけ引く)
+                var Tgraphkasoku = T0s;
+                while (Tgraphkasoku < T0h) {
+                    var Xgparhsitenkasoku = 75 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 505 / Xe15);
+                    var Vgparhsitenkasoku = 167 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 160 / Vd);
+                    Tgraphkasoku += 1;
+                    var Xgparhsyutenkasoku = 75 + ((J * (Tgraphkasoku ** 3 - T0s ** 3) / 6 + A0 * (Tgraphkasoku ** 2 - T0s ** 2) / 2) * 505 / Xe15);
+                    var Vgparhsyutenkasoku = 167 - ((J * (Tgraphkasoku ** 2) / 2 + A0 * Tgraphkasoku) * 3.6 * 160 / Vd);
+                    graph.innerHTML += '<line x1="' + (Xgparhsitenkasoku + Xesumzahyo + 590) + '" y1="' + Vgparhsitenkasoku + '" x2="' + (Xgparhsyutenkasoku + Xesumzahyo + 590) + '" y2="' + Vgparhsyutenkasoku + '" stroke="rgb(255, 168, 168)" stroke-width="4px"/>';
+                }
+                //惰行区間の描画
+                graph.innerHTML += '<line x1="' + (75 + ((Xk + Xesum) * 505 / Xe15) + 590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) + 590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(255, 254, 183)" stroke-width="4px"/>';
+                //空走区間の描画
+                Xfr = Fr * Vh / 3.6;
+                graph.innerHTML += '<line x1="' + (75 + ((Xe - Xg + Xesum) * 505 / Xe15) + 590) + '" y1="' + (167 - (Vh * 160 / Vd)) + '" x2="' + (75 + ((Xe - Xg + Xfr + Xesum) * 505 / Xe15) + 590) + '" y2="' + (167 - (Vh * 160 / Vd)) + '" stroke="rgb(145, 254, 200)" stroke-width="4px"/>';
+                //減速区間の描画(こっちはv-xの関係が一つの式になっているが疑似的にvgraphgensokuの媒介変数表示でやる,1m/s毎)
+                var Vgraphgensoku = Vh / 3.6;
+                while (Vgraphgensoku > Vf) {
+                    var Xgraphsitengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Vgraphsitengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
+                    Vgraphgensoku -= 1;
+                    var Xgraphsyutengensoku = 75 + ((Vgraphgensoku ** 2 - (Vh / 3.6) ** 2) / (-2 * (Agr)) + (Xe + Xfr - Xg)) * 505 / Xe15;
+                    var Vgraphsyutengensoku = 167 - (Vgraphgensoku * 3.6 * 160 / Vd);
+                    graph.innerHTML += '<line x1="' + (Xgraphsitengensoku + Xesumzahyo + 590) + '" y1="' + Vgraphsitengensoku + '" x2="' + (Xgraphsyutengensoku + Xesumzahyo + 590) + '" y2="' + Vgraphsyutengensoku + '" stroke="rgb(190, 255, 254)" stroke-width="4px"/>';
                 }
             }
 
@@ -426,7 +496,7 @@ function curvecalc() {
 }
 
 //multi版の構築用関数
-function main() {
+function main({colormode}) {
     //入力値
     var Ak;//起動加速度
     var Ag;//減速度
@@ -471,82 +541,311 @@ function main() {
         Xe15 = Xe15 + parseFloat(Xe5);
     }
 
-    //グラフを描画するためのSVG要素を生成
-    var grapharea = document.getElementById('grapharea');
-    grapharea.innerHTML = '<svg width="1180" height="200" id="graph"></svg>';
-    //グラフのIDをとっておく
-    var graph = document.getElementById('graph');
-    if (Vd <= 200) {
-        //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=167である)
-        var vline = 10;
-        while (vline <= Vd) {
-            var vlinenoyzahyo = 167 - (vline * 160 / Vd);
-            if (vline % 50 == 0) {
-                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-            } else {
-                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
-                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+    if (colormode == 0) {
+
+        //グラフを描画するためのSVG要素を生成
+        var grapharea = document.getElementById('grapharea');
+        grapharea.innerHTML = '<svg width="1180" height="200" id="graph"></svg>';
+        //グラフのIDをとっておく
+        var graph = document.getElementById('graph');
+        if (Vd < 100) {
+            //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=167である)
+            var vline = 10;
+            while (vline <= Vd) {
+                var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                if (vline % 50 == 0) {
+                    graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                    graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                }
+                vline += 10;
             }
-            vline += 10;
-        }
-    } else {
-        //設計最高速度が201km/h以上の時線を半分に間引く
-        var vline = 20;
-        while (vline <= Vd) {
-            var vlinenoyzahyo = 167 - (vline * 160 / Vd);
-            if (vline % 100 == 0) {
-                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
-            } else {
-                graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
-                graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+        } else {
+            log10Vd = Math.log10(Vd);
+            log10Vdseisu = Math.floor(log10Vd);//桁数-1
+            log10Vdsyosu = log10Vd - log10Vdseisu;//桁の頭文字の常用対数とったやつ
+
+            //頭文字1のとき
+            if (log10Vdsyosu < Math.log10(2)) {
+                var vline = 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (5 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    vline += 10 ** (log10Vdseisu - 1);
+                }
+            } else if (log10Vdsyosu < Math.log10(5)) {//頭文字2-4のとき
+                var vline = 2 * 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (10 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    vline += 2 * 10 ** (log10Vdseisu - 1);
+                }
+            } else {//頭文字5-9のとき
+                var vline = 5 * 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (25 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    vline += 5 * 10 ** (log10Vdseisu - 1);
+                }
             }
-            vline += 20;
         }
-    }
-    if (Xe15 <= 5000) {
-        //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上では上りはXeがx=580,原点がx=75、下りはそれぞれに590を足す)
-        var xline = 100;
-        while (xline <= Xe15) {
-            var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
-            if (xline % 500 == 0) {
-                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
-                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
-            } else {
-                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
-                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
-            }
-            xline += 100;
-        }
-    } else {
-        //総距離が5001m以上の時線を半分に間引く
-        var xline = 200;
-        while (xline <= Xe15) {
-            var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
-            if (xline % 1000 == 0) {
-                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
-                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
-                graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
-            } else {
-                graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
-                graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
-            }
-            xline += 200;
-        }
-    }
-    //運転曲線の軸とラベルの描画
-    var graph = document.getElementById('graph');
-    graph.innerHTML += '<line x1="75" y1="0" x2="75" y2="200" stroke="white" stroke-width="2px"/><line X1="25" y1="167" x2 = "590" y2="167" stroke="white" stroke-width="2px"/><text x="50" y="182">0</text><text x="300" y="197">距離</text><text class = "small" x="570" y="197">[m]</text><line x1="75" y1="0" x2="67" y2="8" stroke="white" stroke-width="2px"/><line x1="75" y1="0" x2="83" y2="8" stroke="white" stroke-width="2px"/><text x="25" y="83">速</text><text x="25" y="100">度</text><text class="small" x="25" y="10">[km/h]</text><line x1="590" y1="167" x2="582" y2="159" stroke="white" stroke-width="2px"/><line x1="590" y1="167" x2="582" y2="175" stroke="white" stroke-width="2px"/><text x="10"y="49" class="small">上</text><text x="10" y="66" class="small">り</text><text x="10" y="83" class="small">運</text><text x="10" y="100" class="small">転</text><text x="10" y="117" class="small">曲</text><text x="10" y="134" class="small">線</text><line x1="665" y1="0" x2="665" y2="200" stroke="white" stroke-width="2px"/><line X1="615" y1="167" x2 = "1180" y2="167" stroke="white" stroke-width="2px"/><text x="640" y="182">0</text><text x="890" y="197">距離</text><text class = "small" x="1160" y="197">[m]</text><line x1="665" y1="0" x2="657" y2="8" stroke="white" stroke-width="2px"/><line x1="665" y1="0" x2="673" y2="8" stroke="white" stroke-width="2px"/><text x="615" y="83">速</text><text x="615" y="100">度</text><text class="small" x="615" y="10">[km/h]</text><line x1="1180" y1="167" x2="1172" y2="159" stroke="white" stroke-width="2px"/><line x1="1180" y1="167" x2="1172" y2="175" stroke="white" stroke-width="2px"/><text x="600"y="49" class="small">下</text><text x="600" y="66" class="small">り</text><text x="600" y="83" class="small">運</text><text x="600" y="100" class="small">転</text><text x="600" y="117" class="small">曲</text><text x="600" y="134" class="small">線</text>';
 
 
+        if (Xe15 < 5000) {
+            //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上では上りはXeがx=580,原点がx=75、下りはそれぞれに590を足す)
+            var xline = 100;
+            while (xline <= Xe15) {
+                var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+                if (xline % 500 == 0) {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                    graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                }
+                xline += 100;
+            }
+        } else {
+            log10Xe15 = Math.log10(Xe15);
+            log10Xe15seisu = Math.floor(log10Xe15);//桁数-1
+            log10Xe15syosu = log10Xe15 - log10Xe15seisu;//桁の頭文字の常用対数とったやつ
+
+            if (log10Xe15syosu < Math.log10(2)) {
+                var xline = (10 ** (log10Xe15seisu - 1)) / 2;
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (2.5 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    xline += (10 ** (log10Xe15seisu - 1)) / 2;
+                }
+            } else if (log10Xe15syosu < Math.log10(5)) {
+                var xline = (10 ** (log10Xe15seisu - 1));
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (5 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    xline += (10 ** (log10Xe15seisu - 1));
+                }
+            } else {
+                var xline = 2 * (10 ** (log10Xe15seisu - 1));
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (10 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#aaaaaa" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="#888888" stroke-width="1px"/>';
+                    }
+                    xline += 2 * (10 ** (log10Xe15seisu - 1));
+                }
+            }
+        }
+
+
+        //運転曲線の軸とラベルの描画
+        var graph = document.getElementById('graph');
+        graph.innerHTML += '<line x1="75" y1="0" x2="75" y2="200" stroke="white" stroke-width="2px"/><line X1="25" y1="167" x2 = "590" y2="167" stroke="white" stroke-width="2px"/><text x="50" y="182">0</text><text x="300" y="197">距離</text><text class = "small" x="570" y="197">[m]</text><line x1="75" y1="0" x2="67" y2="8" stroke="white" stroke-width="2px"/><line x1="75" y1="0" x2="83" y2="8" stroke="white" stroke-width="2px"/><text x="25" y="83">速</text><text x="25" y="100">度</text><text class="small" x="25" y="10">[km/h]</text><line x1="590" y1="167" x2="582" y2="159" stroke="white" stroke-width="2px"/><line x1="590" y1="167" x2="582" y2="175" stroke="white" stroke-width="2px"/><text x="10"y="49" class="small">上</text><text x="10" y="66" class="small">り</text><text x="10" y="83" class="small">運</text><text x="10" y="100" class="small">転</text><text x="10" y="117" class="small">曲</text><text x="10" y="134" class="small">線</text><line x1="665" y1="0" x2="665" y2="200" stroke="white" stroke-width="2px"/><line X1="615" y1="167" x2 = "1180" y2="167" stroke="white" stroke-width="2px"/><text x="640" y="182">0</text><text x="890" y="197">距離</text><text class = "small" x="1160" y="197">[m]</text><line x1="665" y1="0" x2="657" y2="8" stroke="white" stroke-width="2px"/><line x1="665" y1="0" x2="673" y2="8" stroke="white" stroke-width="2px"/><text x="615" y="83">速</text><text x="615" y="100">度</text><text class="small" x="615" y="10">[km/h]</text><line x1="1180" y1="167" x2="1172" y2="159" stroke="white" stroke-width="2px"/><line x1="1180" y1="167" x2="1172" y2="175" stroke="white" stroke-width="2px"/><text x="600"y="49" class="small">下</text><text x="600" y="66" class="small">り</text><text x="600" y="83" class="small">運</text><text x="600" y="100" class="small">転</text><text x="600" y="117" class="small">曲</text><text x="600" y="134" class="small">線</text>';
+    } else {
+
+        ////////////////moonlightの時
+
+        //グラフを描画するためのSVG要素を生成
+        var grapharea = document.getElementById('grapharea');
+        grapharea.innerHTML = '<svg width="1180" height="200" id="graph"></svg>';
+        //グラフのIDをとっておく
+        var graph = document.getElementById('graph');
+        if (Vd < 100) {
+            //速度の補助線を10km/h毎に引く、50km/h毎に太線と数値表示(svg上ではVdがy=7,原点がy=167である)
+            var vline = 10;
+            while (vline <= Vd) {
+                var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                if (vline % 50 == 0) {
+                    graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                }
+                vline += 10;
+            }
+        } else {
+            log10Vd = Math.log10(Vd);
+            log10Vdseisu = Math.floor(log10Vd);//桁数-1
+            log10Vdsyosu = log10Vd - log10Vdseisu;//桁の頭文字の常用対数とったやつ
+
+            //頭文字1のとき
+            if (log10Vdsyosu < Math.log10(2)) {
+                var vline = 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (5 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    vline += 10 ** (log10Vdseisu - 1);
+                }
+            } else if (log10Vdsyosu < Math.log10(5)) {//頭文字2-4のとき
+                var vline = 2 * 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (10 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    vline += 2 * 10 ** (log10Vdseisu - 1);
+                }
+            } else {//頭文字5-9のとき
+                var vline = 5 * 10 ** (log10Vdseisu - 1);
+                while (vline <= Vd) {
+                    var vlinenoyzahyo = 167 - (vline * 160 / Vd);
+                    if (vline % (25 * (10 ** (log10Vdseisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="50" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text x="640" y="' + vlinenoyzahyo + '" class = "small">' + vline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="50" y1="' + vlinenoyzahyo + '" x2="590" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="640" y1="' + vlinenoyzahyo + '" x2="1180" y2="' + vlinenoyzahyo + '" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    vline += 5 * 10 ** (log10Vdseisu - 1);
+                }
+            }
+        }
+
+
+        if (Xe15 < 5000) {
+            //距離の補助線を100m毎に引く、500m毎に太線と数値表示(svg上では上りはXeがx=580,原点がx=75、下りはそれぞれに590を足す)
+            var xline = 100;
+            while (xline <= Xe15) {
+                var xlinenoyzahyo = 75 + (xline * 505 / Xe15);//以降線を追加していくため(上書きではなく)graph.innerHTML の後は += とすること。;
+                if (xline % 500 == 0) {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                    graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                } else {
+                    graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                }
+                xline += 100;
+            }
+        } else {
+            log10Xe15 = Math.log10(Xe15);
+            log10Xe15seisu = Math.floor(log10Xe15);//桁数-1
+            log10Xe15syosu = log10Xe15 - log10Xe15seisu;//桁の頭文字の常用対数とったやつ
+
+            if (log10Xe15syosu < Math.log10(2)) {
+                var xline = (10 ** (log10Xe15seisu - 1)) / 2;
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (2.5 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    xline += (10 ** (log10Xe15seisu - 1)) / 2;
+                }
+            } else if (log10Xe15syosu < Math.log10(5)) {
+                var xline = (10 ** (log10Xe15seisu - 1));
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (5 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    xline += (10 ** (log10Xe15seisu - 1));
+                }
+            } else {
+                var xline = 2 * (10 ** (log10Xe15seisu - 1));
+                while (xline <= Xe15) {
+                    var xlinenoyzahyo = 75 + (xline * 505 / Xe15);
+                    if (xline % (10 * (10 ** (log10Xe15seisu - 1))) == 0) {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + xlinenoyzahyo + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(100,100,165)" stroke-width="1.5px"/>';
+                        graph.innerHTML += '<text class = "small" x="' + (xlinenoyzahyo + 590) + '" y="182" text-anchor = "middle">' + xline + '</text>';
+                    } else {
+                        graph.innerHTML += '<line x1="' + xlinenoyzahyo + '" y1="0" x2="' + xlinenoyzahyo + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                        graph.innerHTML += '<line x1="' + (xlinenoyzahyo + 590) + '" y1="0" x2="' + (xlinenoyzahyo + 590) + '" y2="185" stroke="rgb(80,80,145)" stroke-width="1px"/>';
+                    }
+                    xline += 2 * (10 ** (log10Xe15seisu - 1));
+                }
+            }
+        }
+
+
+        //運転曲線の軸とラベルの描画
+        var graph = document.getElementById('graph');
+        graph.innerHTML += '<line x1="75" y1="0" x2="75" y2="200" stroke="rgb(160,160,225)" stroke-width="2px"/><line X1="25" y1="167" x2 = "590" y2="167" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="50" y="182">0</text><text x="300" y="197">距離</text><text class = "small" x="570" y="197">[m]</text><line x1="75" y1="0" x2="67" y2="8" stroke="rgb(160,160,225)" stroke-width="2px"/><line x1="75" y1="0" x2="83" y2="8" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="25" y="83">速</text><text x="25" y="100">度</text><text class="small" x="25" y="10">[km/h]</text><line x1="590" y1="167" x2="582" y2="159" stroke="rgb(160,160,225)" stroke-width="2px"/><line x1="590" y1="167" x2="582" y2="175" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="10"y="49" class="small">上</text><text x="10" y="66" class="small">り</text><text x="10" y="83" class="small">運</text><text x="10" y="100" class="small">転</text><text x="10" y="117" class="small">曲</text><text x="10" y="134" class="small">線</text><line x1="665" y1="0" x2="665" y2="200" stroke="rgb(160,160,225)" stroke-width="2px"/><line X1="615" y1="167" x2 = "1180" y2="167" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="640" y="182">0</text><text x="890" y="197">距離</text><text class = "small" x="1160" y="197">[m]</text><line x1="665" y1="0" x2="657" y2="8" stroke="rgb(160,160,225)" stroke-width="2px"/><line x1="665" y1="0" x2="673" y2="8" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="615" y="83">速</text><text x="615" y="100">度</text><text class="small" x="615" y="10">[km/h]</text><line x1="1180" y1="167" x2="1172" y2="159" stroke="rgb(160,160,225)" stroke-width="2px"/><line x1="1180" y1="167" x2="1172" y2="175" stroke="rgb(160,160,225)" stroke-width="2px"/><text x="600"y="49" class="small">下</text><text x="600" y="66" class="small">り</text><text x="600" y="83" class="small">運</text><text x="600" y="100" class="small">転</text><text x="600" y="117" class="small">曲</text><text x="600" y="134" class="small">線</text>';
+    }
 
     //前区間までの累計距離(グラフ用)を初期化
     var Xesum = 0;
@@ -557,7 +856,7 @@ function main() {
     Xe = document.getElementById("Xe1").value;
     S = document.getElementById("S1").value;
     //上り1区間目の計算と数値取得
-    var resultn1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultn1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode , colormode});
     //結果表示
     var ResultTsn1 = document.getElementById('ResultTsn1');
     ResultTsn1.innerHTML = resultn1[0];
@@ -577,7 +876,7 @@ function main() {
     Xe = document.getElementById("Xe2").value;
     S = document.getElementById("S2").value;
     //上り2区間目の計算と数値取得
-    var resultn2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultn2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode , colormode});
     //結果表示
     var ResultTsn2 = document.getElementById('ResultTsn2');
     ResultTsn2.innerHTML = resultn2[0];
@@ -597,7 +896,7 @@ function main() {
     Xe = document.getElementById("Xe3").value;
     S = document.getElementById("S3").value;
     //上り3区間目の計算と数値取得
-    var resultn3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultn3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode , colormode});
     //結果表示
     var ResultTsn3 = document.getElementById('ResultTsn3');
     ResultTsn3.innerHTML = resultn3[0];
@@ -617,7 +916,7 @@ function main() {
     Xe = document.getElementById("Xe4").value;
     S = document.getElementById("S4").value;
     //上り4区間目の計算と数値取得
-    var resultn4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultn4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode , colormode});
     //結果表示
     var ResultTsn4 = document.getElementById('ResultTsn4');
     ResultTsn4.innerHTML = resultn4[0];
@@ -637,7 +936,7 @@ function main() {
     Xe = document.getElementById("Xe5").value;
     S = document.getElementById("S5").value;
     //上り5区間目の計算と数値取得
-    var resultn5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultn5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode , colormode});
     //結果表示
     var ResultTsn5 = document.getElementById('ResultTsn5');
     ResultTsn5.innerHTML = resultn5[0];
@@ -656,7 +955,7 @@ function main() {
     Xe = document.getElementById("Xe5").value;
     S = document.getElementById("S5").value;
     //下り5区間目の計算と数値取得
-    var resultk5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultk5 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode });
     //結果表示
     var ResultTsk5 = document.getElementById('ResultTsk5');
     ResultTsk5.innerHTML = resultk5[0];
@@ -676,7 +975,7 @@ function main() {
     Xe = document.getElementById("Xe4").value;
     S = document.getElementById("S4").value;
     //下り4区間目の計算と数値取得
-    var resultk4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultk4 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode });
     //結果表示
     var ResultTsk4 = document.getElementById('ResultTsk4');
     ResultTsk4.innerHTML = resultk4[0];
@@ -696,7 +995,7 @@ function main() {
     Xe = document.getElementById("Xe3").value;
     S = document.getElementById("S3").value;
     //下り3区間目の計算と数値取得
-    var resultk3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultk3 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode });
     //結果表示
     var ResultTsk3 = document.getElementById('ResultTsk3');
     ResultTsk3.innerHTML = resultk3[0];
@@ -716,7 +1015,7 @@ function main() {
     Xe = document.getElementById("Xe2").value;
     S = document.getElementById("S2").value;
     //下り2区間目の計算と数値取得
-    var resultk2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultk2 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode });
     //結果表示
     var ResultTsk2 = document.getElementById('ResultTsk2');
     ResultTsk2.innerHTML = resultk2[0];
@@ -736,7 +1035,7 @@ function main() {
     Xe = document.getElementById("Xe1").value;
     S = document.getElementById("S1").value;
     //下り1区間目の計算と数値取得
-    var resultk1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef });
+    var resultk1 = calc({ Ak, Ag, Vd, K, Fr, Vs, Vh, Vf, Xe, S, Xe15, Xesum, NorK, Xgbef , colormode });
     //結果表示
     var ResultTsk1 = document.getElementById('ResultTsk1');
     ResultTsk1.innerHTML = resultk1[0];
@@ -764,6 +1063,8 @@ function kusojikan() {
     });
 }
 
+
+
 //自動更新システム
 timestamp = 0;
 var updateinterval = 10;//更新間隔,デフォルトは10フレームごと
@@ -774,7 +1075,14 @@ function update() {
     window.requestAnimationFrame(update);
 
     if (timestamp % updateinterval == 0) {
-        main();
+
+        var colormode = 0;
+        var cssLink = document.getElementById('RM');
+        if (cssLink && cssLink.getAttribute('href') === 'moonlight.css') {
+            colormode = 1;
+        }
+
+        main({colormode});
         curvecalc();
         kusojikan();
         //更新間隔の変更を反映
@@ -787,5 +1095,3 @@ function update() {
 }
 
 update();
-
-})();
