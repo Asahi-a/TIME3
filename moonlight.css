@@ -1,0 +1,271 @@
+body {
+    color: rgb(190,190,255);
+    background-color: rgb(5,5,30);
+    width: 1220px;
+}
+
+h1:hover {
+    color: rgb(190, 255, 254);
+}
+
+.h3:hover {
+    color: rgb(190, 255, 254);
+}
+
+p:hover {
+    color: rgb(190, 255, 254);
+}
+
+input {
+    font-size: 110%;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: end;
+    background-color: rgb(50,50,100);
+    color: #fff79d;
+    border-radius: 0px;
+    height: 22px;
+}
+
+.inputblue { /*multi*/
+    color: rgb(190, 255, 254);
+    border-radius: 0px;
+    height: 22px;
+}
+
+button{
+    border-radius: 1px;
+    background-color:rgb(160,160,225);
+    color:rgb(5,5,30);
+}
+
+.container {
+    justify-content: space-between;
+    border-width: 10px;
+    border-color: rgb(50,50,100);
+    border-style: solid;
+    width: 1220px;
+}
+
+.log { /*multi*/
+    border: 1px solid #bbb37c;
+    width: 1180px;
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.single{
+    margin: 0 auto;
+    display: flex;
+}
+
+.resultsingle {
+    border: 1px solid #bbb37c;
+    width: 45%;
+    margin: 10px;
+    padding: 10px;
+    padding-top: 50px;
+    font-weight: bold;
+}
+
+.form {
+    border: 1px solid #bbb37c;
+    margin: 10px;
+    padding: 10px;
+    width: 1180px;
+}
+
+.formsingle {
+    border: 1px solid #bbb37c;
+    margin: 10px;
+    padding: 10px;
+    width: 35%;
+}
+
+.curve {
+    border: 1px solid #bbb37c;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgb(25,25,50);
+}
+
+.curvesingle {
+    border: 1px solid #bbb37c;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin: 10px;
+    background-color: rgb(25,25,50);
+    width: 15%;
+}
+
+.small {
+    font-size: 10px;
+    color:rgb(183, 177, 150);
+}
+
+.small2 {
+    font-size: 50%;
+    color: #bbb37c;
+    border-bottom: 1.5px solid #bbb37c;
+}
+
+.trbd {
+    font-weight: bold;
+}
+
+.trbd:hover {
+    font-size: 105%;
+    color: #fff79d;
+}
+
+.trbd2 {/*V5,multi*/
+    width: 250px;
+    font-weight: bold;
+}
+
+.trbd3 {/*multi*/
+    font-weight: bold;
+    font-size: 70%;
+    color: rgb(160,160,225);
+    text-align: center;
+}
+
+text {/*V5,multi*/
+    fill: white;
+    font-weight: bold;
+}
+
+::placeholder {/*multi*/
+    font-size: 12px;
+}
+
+#popup-wrapper {/*multi*/
+    background-color: rgba(0, 0, 0, .5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#popup-inside {/*multi*/
+    text-align: center;
+    width: 100%;
+    max-width: 150px;
+    background: rgb(50,50,100);
+    position: relative;
+    top: 400px;
+    left: 265px;
+    font-size: 10px;
+    color: rgb(160,160,225);
+    font-weight: normal;
+}
+
+#close {/*multi*/
+    position: absolute;
+    top: 0;
+    right: 5px;
+    cursor: pointer;
+}
+
+.koumokumei {
+    font-size: 70%;
+    border-bottom: 1.5px solid #bbb37c;
+}
+
+.simamoyo {
+    background-color: rgb(50,50,100);
+}
+
+.simayajirusi {
+    font-size: 10px;
+    background-color: rgb(50,50,100);
+    text-align: center;
+    font-weight: bold;
+}
+
+.simainput {
+    text-align: center;
+    background-color: rgb(50,50,100);
+}
+
+#rec {
+    font-size: 130%;
+    color:#fff79d;
+    font-family: Impact;
+    font-weight: bold;
+}
+
+#recSg {
+    font-size: 130%;
+    color:#fff79d;
+    font-family: Impact;
+    font-weight: bold;
+}
+
+.multitex {
+    font-family: Impact;
+    font-size: 80%;
+    color: rgb(160,160,225);
+}
+
+.resultnVh {
+    text-align: center;
+    font-size: 18px;
+    background-color: rgb(50,50,100);
+    font-family: Impact;
+    color: #fff79d;
+}
+
+.resultnTs {
+    text-align: center;
+    font-size: 25px;
+    background-color: rgb(50,50,100);
+    font-family: Impact;
+    color: #fff79d;
+}
+
+.resultkVh {
+    text-align: center;
+    font-size: 18px;
+    background-color: rgb(50,50,100);
+    font-family: Impact;
+    color: rgb(190, 255, 254);
+}
+
+.resultkTs {
+    text-align: center;
+    font-size: 25px;
+    background-color: rgb(50,50,100);
+    font-family: Impact;
+    color: rgb(190, 255, 254);
+}
+
+.redtext{
+    color: #fff79d;
+}
+
+.multiswitch{
+    font-size:120%;
+    font-weight:bold;
+    background-color:#fff79d;
+    color:black;
+    text-decoration: underline;
+}
+
+.singleswitch{
+    font-size:120%;
+    font-weight:bold;
+    background-color:#fff79d;
+    color:black;
+    text-decoration: underline;
+}
+
+#moonlight{
+    display: none;
+}
+
+.kinouteiji {
+    color:rgb(130,130,195);
+}
