@@ -269,3 +269,40 @@ text {/*V5,multi*/
 .kinouteiji {
     color:rgb(130,130,195);
 }
+
+.bottomContainer{
+    justify-content: space-between;
+    width: 1220px;
+    display: flex;
+
+}
+
+.explain{
+    width: 892px;
+    padding-left: 62px;
+}
+
+.commentwindow{
+    width: 328px;
+}
+
+.nameform{
+    font-size: 100%;
+    font-family: sans-serif;
+    text-align: start;
+    background-color: rgb(50,50,100);
+    color: #fff79d;
+    border-radius: 0px;
+    height: 22px;
+}
+
+.commentform{
+    font-size: 100%;
+    font-family: sans-serif;
+    text-align: start;
+    background-color: rgb(50,50,100);
+    color: #fff79d;
+    border-radius: 0px;
+    height: 60px;
+    width:100%;
+}
