@@ -31,7 +31,14 @@ db.collection("comments")
     const commentsDiv = document.getElementById("comments");
     commentsDiv.innerHTML = "";
     snapshot.forEach((doc) => {
-      const c = doc.data();
-      commentsDiv.innerHTML += `<p><b>${c.name}</b>: ${c.message}</p>`;
-    });
+  const c = doc.data();
+  const date = c.time.toDate().toLocaleString("ja-JP");
+
+  commentsDiv.innerHTML += `
+    <p>
+      <b>${c.name}</b> (${date})<br>
+      ${c.message}
+    </p>`;
+});
+
   });
